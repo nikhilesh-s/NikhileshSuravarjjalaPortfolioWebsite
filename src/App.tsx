@@ -18,6 +18,7 @@ import Journey from './pages/Journey';
 import AdminAuth from './admin/AdminAuth';
 import ProtectedRoute from './utils/ProtectedRoute';
 import SetupAdmin from './admin/SetupAdmin';
+import EnvDebug from './admin/EnvDebug';
 
 const MainContent = () => (
   <div className="relative z-0 bg-primary">
@@ -77,8 +78,9 @@ const App = () => {
           <Route path="/admin/certifications" element={<ProtectedRoute><CertificationsEditor /></ProtectedRoute>} />
           <Route path="/admin/technologies" element={<ProtectedRoute><TechnologiesEditor /></ProtectedRoute>} />
           
-          {/* Temporary Setup Route - Remove after initial setup */}
+          {/* Debugging and setup routes */}
           <Route path="/admin/setup" element={<SetupAdmin />} />
+          <Route path="/admin/debug" element={<EnvDebug />} />
           
           {/* Redirect old admin login path to new one */}
           <Route path="/admin-login" element={<Navigate to="/admin/login" replace />} />
