@@ -41,11 +41,57 @@ export const getProjects = () => getData("projects");
 export const saveExperiences = (experiences: any[]) => saveData("experiences", experiences);
 export const getExperiences = () => getData("experiences");
 
-export const saveCertifications = (certifications: any[]) => saveData("certifications", certifications);
-export const getCertifications = () => getData("certifications");
+export const saveCertifications = async (certifications: any[]) => {
+  try {
+    await setDoc(doc(db, "portfolioData", "certifications"), { data: certifications });
+    return true;
+  } catch (error) {
+    console.error("Error saving certifications data:", error);
+    return false;
+  }
+};
 
-export const saveJourney = (journey: any[]) => saveData("journey", journey);
-export const getJourney = () => getData("journey");
+export const getCertifications = async () => {
+  try {
+    const docRef = doc(db, "portfolioData", "certifications");
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      return docSnap.data().data;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error("Error getting certifications data:", error);
+    return null;
+  }
+};
+
+export const saveJourney = async (journey: any[]) => {
+  try {
+    await setDoc(doc(db, "portfolioData", "journey"), { data: journey });
+    return true;
+  } catch (error) {
+    console.error("Error saving journey data:", error);
+    return false;
+  }
+};
+
+export const getJourney = async () => {
+  try {
+    const docRef = doc(db, "portfolioData", "journey");
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      return docSnap.data().data;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error("Error getting journey data:", error);
+    return null;
+  }
+};
 
 export const saveSkills = (skills: any[]) => saveData("skills", skills);
 export const getSkills = () => getData("skills");
@@ -76,23 +122,106 @@ export const getAbout = async () => {
   }
 };
 
-export const saveContact = (contact: any) => saveData("contact", [contact]).then(success => success);
+export const saveContact = async (contact: any) => {
+  try {
+    await setDoc(doc(db, "portfolioData", "contact"), { data: contact });
+    return true;
+  } catch (error) {
+    console.error("Error saving contact data:", error);
+    return false;
+  }
+};
+
 export const getContact = async () => {
-  const data = await getData("contact");
-  return data && data.length > 0 ? data[0] : null;
+  try {
+    const docRef = doc(db, "portfolioData", "contact");
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      return docSnap.data().data;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error("Error getting contact data:", error);
+    return null;
+  }
 };
 
-export const saveHero = (hero: any) => saveData("hero", [hero]).then(success => success);
+export const saveHero = async (hero: any) => {
+  try {
+    await setDoc(doc(db, "portfolioData", "hero"), { data: hero });
+    return true;
+  } catch (error) {
+    console.error("Error saving hero data:", error);
+    return false;
+  }
+};
+
 export const getHero = async () => {
-  const data = await getData("hero");
-  return data && data.length > 0 ? data[0] : null;
+  try {
+    const docRef = doc(db, "portfolioData", "hero");
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      return docSnap.data().data;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error("Error getting hero data:", error);
+    return null;
+  }
 };
 
-export const saveFeedbacks = (feedbacks: any[]) => saveData("feedbacks", feedbacks);
-export const getFeedbacks = () => getData("feedbacks");
+export const saveFeedbacks = async (feedbacks: any[]) => {
+  try {
+    await setDoc(doc(db, "portfolioData", "feedbacks"), { data: feedbacks });
+    return true;
+  } catch (error) {
+    console.error("Error saving feedbacks data:", error);
+    return false;
+  }
+};
 
-export const saveResume = (resume: any) => saveData("resume", [resume]).then(success => success);
+export const getFeedbacks = async () => {
+  try {
+    const docRef = doc(db, "portfolioData", "feedbacks");
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      return docSnap.data().data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.error("Error getting feedbacks data:", error);
+    return [];
+  }
+};
+
+export const saveResume = async (resume: any) => {
+  try {
+    await setDoc(doc(db, "portfolioData", "resume"), { data: resume });
+    return true;
+  } catch (error) {
+    console.error("Error saving resume data:", error);
+    return false;
+  }
+};
+
 export const getResume = async () => {
-  const data = await getData("resume");
-  return data && data.length > 0 ? data[0] : null;
+  try {
+    const docRef = doc(db, "portfolioData", "resume");
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      return docSnap.data().data;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error("Error getting resume data:", error);
+    return null;
+  }
 };

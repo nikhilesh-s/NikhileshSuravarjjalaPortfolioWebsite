@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Save, Plus, Trash2 } from 'lucide-react';
+import { getHero, saveHero } from '../services/dataService';
+import { useFirebaseSingleItemEditor } from './FirebaseEditorHelper';
 
 interface HeroContent {
   greeting: string;
@@ -21,10 +23,19 @@ const initialHeroData: HeroContent = {
 };
 
 const HeroEditor: React.FC = () => {
-  const [heroData, setHeroData] = useState<HeroContent>(() => {
-    const savedData = localStorage.getItem('portfolio-hero-data');
-    return savedData ? JSON.parse(savedData) : initialHeroData;
-  });
+  // Use Firebase editor helper for single item
+  const {
+    item: heroData,
+    isLoading,
+    message,
+    fetchData,
+    saveData
+  } = useFirebaseSingleItemEditor<HeroContent>(
+    'portfolio-hero-data',
+    getHero,
+    saveHero,
+    initialHeroData
+  );
   
   const [typingSpeed, setTypingSpeed] = useState<number>(() => {
     const savedSpeed = localStorage.getItem('portfolio-typing-speed');
@@ -32,40 +43,37 @@ const HeroEditor: React.FC = () => {
   });
   
   const [newTypedText, setNewTypedText] = useState('');
-  const [message, setMessage] = useState({ text: '', type: '' });
+  
+  useEffect(() => {
+    fetchData();
+  }, []);
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setHeroData(prev => ({ ...prev, [name]: value }));
+    const updatedHero = { ...heroData, [name]: value };
+    saveData(updatedHero);
   };
   
   const handleAddTypedText = () => {
     if (newTypedText.trim()) {
-      setHeroData(prev => ({
-        ...prev,
-        typedTexts: [...prev.typedTexts, newTypedText.trim()]
-      }));
+      const updatedHero = { ...heroData, typedTexts: [...heroData.typedTexts, newTypedText.trim()] };
+      saveData(updatedHero);
       setNewTypedText('');
     }
   };
   
   const handleRemoveTypedText = (index: number) => {
-    setHeroData(prev => ({
-      ...prev,
-      typedTexts: prev.typedTexts.filter((_, i) => i !== index)
-    }));
+    const updatedHero = { ...heroData, typedTexts: heroData.typedTexts.filter((_, i) => i !== index) };
+    saveData(updatedHero);
   };
   
   const handleSpeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTypingSpeed(parseInt(e.target.value));
   };
   
-  const saveChanges = () => {
-    localStorage.setItem('portfolio-hero-data', JSON.stringify(heroData));
-    localStorage.setItem('portfolio-typing-speed', typingSpeed.toString());
-    setMessage({ text: 'Changes saved successfully!', type: 'success' });
-    setTimeout(() => setMessage({ text: '', type: '' }), 3000);
-  };
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
   
   return (
     <div className="bg-primary text-white min-h-screen p-8">
@@ -77,7 +85,7 @@ const HeroEditor: React.FC = () => {
           <h1 className="text-3xl font-bold">Hero Section Editor</h1>
         </div>
         
-        {message.text && (
+        {message && (
           <div className={`mb-6 p-4 rounded-lg ${message.type === 'success' ? 'bg-green-800' : 'bg-red-800'}`}>
             {message.text}
           </div>
@@ -180,7 +188,7 @@ const HeroEditor: React.FC = () => {
           
           <div className="flex justify-end mt-6">
             <button
-              onClick={saveChanges}
+              onClick={() => saveData(heroData)}
               className="px-4 py-2 bg-green-600 rounded-lg hover:bg-green-500 transition-colors flex items-center gap-2"
             >
               <Save size={16} />

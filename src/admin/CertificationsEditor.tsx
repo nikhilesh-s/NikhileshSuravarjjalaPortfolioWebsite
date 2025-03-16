@@ -64,34 +64,42 @@ const CertificationsEditor: React.FC = () => {
   };
   
   const handleDeleteCertification = (index: number) => {
-    if (window.confirm('Are you sure you want to delete this certification?')) {
-      const updatedCerts = [...certifications];
-      updatedCerts.splice(index, 1);
-      setCertifications(updatedCerts);
-      saveData(updatedCerts);
-      showSaveMessage("Certification deleted");
+    const updatedCertifications = [...certifications];
+    updatedCertifications.splice(index, 1);
+    setCertifications(updatedCertifications);
+    saveData(updatedCertifications);
+    showSaveMessage('Certification deleted successfully!');
+  };
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (currentCertification) {
+      let updatedCertifications;
+      
+      if (editingCertIndex !== null) {
+        // Update existing certification
+        updatedCertifications = [...certifications];
+        updatedCertifications[editingCertIndex] = currentCertification;
+      } else {
+        // Add new certification
+        updatedCertifications = [...certifications, currentCertification];
+      }
+      
+      setCertifications(updatedCertifications);
+      saveData(updatedCertifications);
+      showSaveMessage('Certification saved successfully!');
+      
+      // Reset form
+      setCurrentCertification(null);
+      setIsEditingCert(false);
+      setEditingCertIndex(null);
     }
   };
   
-  const handleSaveCertification = () => {
-    if (!currentCertification) return;
-    
-    const updatedCerts = [...certifications];
-    
-    if (editingCertIndex !== null) {
-      // Update existing certification
-      updatedCerts[editingCertIndex] = currentCertification;
-    } else {
-      // Add new certification
-      updatedCerts.push(currentCertification);
-    }
-    
-    setCertifications(updatedCerts);
-    saveData(updatedCerts);
-    setIsEditingCert(false);
-    setCurrentCertification(null);
-    setEditingCertIndex(null);
-    showSaveMessage(editingCertIndex !== null ? "Certification updated" : "Certification added");
+  const handleSaveAll = () => {
+    saveData(certifications);
+    showSaveMessage('All certifications saved successfully!');
   };
   
   const handleCancelEdit = () => {
@@ -137,7 +145,7 @@ const CertificationsEditor: React.FC = () => {
                   {editingCertIndex !== null ? 'Edit Certification' : 'Add New Certification'}
                 </h3>
                 
-                <form>
+                <form onSubmit={handleSubmit}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
                       <label className="block text-sm font-medium mb-2">
@@ -222,8 +230,7 @@ const CertificationsEditor: React.FC = () => {
                       Cancel
                     </button>
                     <button
-                      type="button"
-                      onClick={handleSaveCertification}
+                      type="submit"
                       className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2"
                     >
                       <Save size={16} />
@@ -303,6 +310,13 @@ const CertificationsEditor: React.FC = () => {
                     ))}
                   </div>
                 )}
+                <button
+                  onClick={handleSaveAll}
+                  className="px-4 py-2 bg-green-600 rounded-lg hover:bg-green-500 transition-colors flex items-center gap-2 mt-4"
+                >
+                  <Save size={16} />
+                  Save All Certifications
+                </button>
               </div>
             )}
           </>

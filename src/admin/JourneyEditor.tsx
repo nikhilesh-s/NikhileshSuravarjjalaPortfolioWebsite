@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, Plus, Trash2, Save, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { getJourney, saveJourney } from '../services/dataService';
+import { useFirebaseEditor } from './FirebaseEditorHelper';
+import { v4 as uuidv4 } from 'uuid';
 
 interface JourneyItem {
   id: string;
@@ -44,80 +46,34 @@ const categoryOptions = [
 ];
 
 const JourneyEditor = () => {
-  const [journeyItems, setJourneyItems] = useState<JourneyItem[]>([]);
+  // Use the Firebase editor helper
+  const {
+    items: journeyItems,
+    setItems: setJourneyItems,
+    isLoading,
+    message,
+    setMessage,
+    fetchData,
+    saveData
+  } = useFirebaseEditor<JourneyItem>(
+    'portfolio-journey', 
+    getJourney, 
+    saveJourney,
+    initialJourneyData
+  );
+  
   const [editingItem, setEditingItem] = useState<JourneyItem | null>(null);
   const [isAddMode, setIsAddMode] = useState(false);
-  const [message, setMessage] = useState({ text: '', type: '' });
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Load journey data from Firebase or initialize with sample data
+  
+  // Load journey items from Firebase on component mount
   useEffect(() => {
-    const fetchJourneyData = async () => {
-      try {
-        setIsLoading(true);
-        const firebaseJourney = await getJourney();
-        
-        if (firebaseJourney && firebaseJourney.length > 0) {
-          setJourneyItems(firebaseJourney);
-        } else {
-          // Fallback to localStorage if no data in Firebase
-          const savedData = localStorage.getItem('portfolio-journey-data');
-          if (savedData) {
-            try {
-              setJourneyItems(JSON.parse(savedData));
-            } catch (error) {
-              console.error("Failed to parse journey data", error);
-              setJourneyItems(initialJourneyData);
-            }
-          } else {
-            setJourneyItems(initialJourneyData);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching journey data:", error);
-        // Fallback to localStorage if Firebase fails
-        const savedData = localStorage.getItem('portfolio-journey-data');
-        if (savedData) {
-          try {
-            setJourneyItems(JSON.parse(savedData));
-          } catch (error) {
-            console.error("Failed to parse journey data", error);
-            setJourneyItems(initialJourneyData);
-          }
-        } else {
-          setJourneyItems(initialJourneyData);
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    fetchJourneyData();
-  }, []);
+    fetchData();
+  }, [fetchData]);
 
-  // Save changes to Firebase and localStorage
-  const saveData = async () => {
-    setIsLoading(true);
-    try {
-      const saveSuccess = await saveJourney(journeyItems);
-      if (saveSuccess) {
-        // Also update localStorage as backup
-        localStorage.setItem('portfolio-journey-data', JSON.stringify(journeyItems));
-        setMessage({ text: 'Journey timeline saved successfully to Firebase!', type: 'success' });
-      } else {
-        setMessage({ text: 'Error saving to Firebase. Changes saved locally only.', type: 'error' });
-        // Still update localStorage
-        localStorage.setItem('portfolio-journey-data', JSON.stringify(journeyItems));
-      }
-    } catch (error) {
-      console.error("Error saving journey data:", error);
-      setMessage({ text: 'Error saving to Firebase. Changes saved locally only.', type: 'error' });
-      // Still update localStorage
-      localStorage.setItem('portfolio-journey-data', JSON.stringify(journeyItems));
-    } finally {
-      setIsLoading(false);
-      setTimeout(() => setMessage({ text: '', type: '' }), 3000);
-    }
+  // Show success/error messages
+  const showMessage = (text: string, type: 'success' | 'error') => {
+    setMessage({ text, type });
+    setTimeout(() => setMessage({ text: '', type: '' }), 3000);
   };
 
   // Handle edit form input changes
@@ -134,7 +90,7 @@ const JourneyEditor = () => {
   // Add new journey item
   const addItem = () => {
     const newItem: JourneyItem = {
-      id: Date.now().toString(),
+      id: uuidv4(),
       title: '',
       subtitle: '',
       description: '',
@@ -154,35 +110,44 @@ const JourneyEditor = () => {
 
   // Save the current editing item
   const saveItem = () => {
-    if (!editingItem) return;
-
-    let newItems;
-    
-    if (isAddMode) {
-      newItems = [...journeyItems, editingItem];
-    } else {
-      newItems = journeyItems.map(item => 
-        item.id === editingItem.id ? editingItem : item
-      );
+    if (editingItem) {
+      let updatedItems: JourneyItem[];
+      
+      if (isAddMode) {
+        updatedItems = [...journeyItems, editingItem];
+      } else {
+        updatedItems = journeyItems.map(item => 
+          item.id === editingItem.id ? editingItem : item
+        );
+      }
+      
+      setJourneyItems(updatedItems);
+      showMessage('Item saved successfully!', 'success');
+      saveData(updatedItems);
+      
+      setEditingItem(null);
+      setIsAddMode(false);
     }
-    
-    setJourneyItems(newItems);
-    setEditingItem(null);
-    saveData();
   };
 
   // Delete a journey item
   const deleteItem = (id: string) => {
-    if (window.confirm('Are you sure you want to delete this item?')) {
-      const newItems = journeyItems.filter(item => item.id !== id);
-      setJourneyItems(newItems);
-      saveData();
-    }
+    const updatedItems = journeyItems.filter(item => item.id !== id);
+    setJourneyItems(updatedItems);
+    saveData(updatedItems);
+    showMessage('Item deleted successfully', 'success');
   };
 
   // Cancel editing mode
   const cancelEdit = () => {
     setEditingItem(null);
+    setIsAddMode(false);
+    showMessage('Edit cancelled', 'error');
+  };
+
+  // Save changes to Firebase
+  const handleSaveData = () => {
+    saveData(journeyItems);
   };
 
   return (
@@ -313,8 +278,8 @@ const JourneyEditor = () => {
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold">Journey Timeline Items</h2>
                 <button
-                  onClick={saveData}
-                  className="px-4 py-2 bg-blue-600 rounded-lg hover:bg-blue-500 transition-colors flex items-center gap-2"
+                  onClick={handleSaveData}
+                  className="ml-auto flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white py-2 px-4 rounded-lg shadow"
                   disabled={isLoading}
                 >
                   <Save size={18} />

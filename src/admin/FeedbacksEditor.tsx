@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Save, Plus, Trash2, Edit } from 'lucide-react';
+import { getFeedbacks, saveFeedbacks } from '../services/dataService';
+import { v4 as uuidv4 } from 'uuid';
 
 interface Feedback {
   id: string;
@@ -36,28 +38,75 @@ const initialFeedbacks: Feedback[] = [
 ];
 
 const FeedbacksEditor: React.FC = () => {
-  const [feedbacks, setFeedbacks] = useState<Feedback[]>(initialFeedbacks);
+  const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
   const [editingFeedback, setEditingFeedback] = useState<Feedback | null>(null);
-  const [isSaved, setIsSaved] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [message, setMessage] = useState({ text: '', type: '' });
   
   const [newName, setNewName] = useState<string>('');
   const [newCompany, setNewCompany] = useState<string>('');
   const [newImage, setNewImage] = useState<string>('https://randomuser.me/api/portraits/men/1.jpg');
   const [newTestimonial, setNewTestimonial] = useState<string>('');
 
+  useEffect(() => {
+    // Load feedbacks from Firebase
+    const loadFeedbacks = async () => {
+      try {
+        setIsLoading(true);
+        const data = await getFeedbacks();
+        
+        if (data && data.length > 0) {
+          setFeedbacks(data);
+        } else {
+          // Fallback to localStorage or initial data
+          const savedFeedbacks = localStorage.getItem('portfolio-feedbacks');
+          if (savedFeedbacks) {
+            setFeedbacks(JSON.parse(savedFeedbacks));
+          } else {
+            setFeedbacks(initialFeedbacks);
+          }
+        }
+      } catch (err) {
+        console.error("Error loading feedbacks:", err);
+        // Fallback to localStorage
+        const savedFeedbacks = localStorage.getItem('portfolio-feedbacks');
+        if (savedFeedbacks) {
+          setFeedbacks(JSON.parse(savedFeedbacks));
+        } else {
+          setFeedbacks(initialFeedbacks);
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadFeedbacks();
+  }, []);
+
   const handleSave = () => {
     // In a real app, this would save to a backend server
-    setIsSaved(true);
-    setTimeout(() => {
-      setIsSaved(false);
-    }, 2000);
+    setIsLoading(true);
+    saveFeedbacks(feedbacks).then(() => {
+      setMessage({ text: 'Changes saved successfully!', type: 'success' });
+      setTimeout(() => {
+        setMessage({ text: '', type: '' });
+      }, 2000);
+    }).catch((err) => {
+      console.error("Error saving feedbacks:", err);
+      setMessage({ text: 'Error saving changes!', type: 'error' });
+      setTimeout(() => {
+        setMessage({ text: '', type: '' });
+      }, 2000);
+    }).finally(() => {
+      setIsLoading(false);
+    });
   };
 
   const addFeedback = () => {
     if (newName.trim() === '' || newTestimonial.trim() === '') return;
     
     const newFeedback: Feedback = {
-      id: (feedbacks.length + 1).toString(),
+      id: uuidv4(),
       name: newName,
       company: newCompany,
       image: newImage,
@@ -129,9 +178,9 @@ const FeedbacksEditor: React.FC = () => {
           <h1 className="text-3xl font-bold">Testimonials & Feedbacks Editor</h1>
         </div>
       
-        {isSaved && (
-          <div className="mb-6 p-4 rounded-lg bg-green-800">
-            Changes saved successfully!
+        {message.text && (
+          <div className={`mb-6 p-4 rounded-lg ${message.type === 'success' ? 'bg-green-800' : 'bg-red-800'}`}>
+            {message.text}
           </div>
         )}
       
@@ -228,45 +277,51 @@ const FeedbacksEditor: React.FC = () => {
           <div className="bg-tertiary p-6 rounded-xl">
             <h2 className="text-xl font-bold mb-6">All Testimonials</h2>
           
-            {feedbacks.length === 0 ? (
+            {isLoading ? (
               <div className="text-center py-12 text-gray-400">
-                No testimonials yet. Add your first testimonial.
+                Loading...
               </div>
             ) : (
-              <div className="space-y-6">
-                {feedbacks.map((feedback) => (
-                  <div key={feedback.id} className="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition-colors">
-                    <div className="flex justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={feedback.image}
-                          alt={feedback.name}
-                          className="w-10 h-10 rounded-full object-cover"
-                        />
-                        <div>
-                          <h3 className="font-medium">{feedback.name}</h3>
-                          <p className="text-indigo-400 text-sm">{feedback.company}</p>
+              feedbacks.length === 0 ? (
+                <div className="text-center py-12 text-gray-400">
+                  No testimonials yet. Add your first testimonial.
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {feedbacks.map((feedback) => (
+                    <div key={feedback.id} className="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition-colors">
+                      <div className="flex justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <img
+                            src={feedback.image}
+                            alt={feedback.name}
+                            className="w-10 h-10 rounded-full object-cover"
+                          />
+                          <div>
+                            <h3 className="font-medium">{feedback.name}</h3>
+                            <p className="text-indigo-400 text-sm">{feedback.company}</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => startEditing(feedback)}
+                            className="text-indigo-400 hover:text-indigo-300"
+                          >
+                            <Edit size={16} />
+                          </button>
+                          <button
+                            onClick={() => removeFeedback(feedback.id)}
+                            className="text-red-400 hover:text-red-300"
+                          >
+                            <Trash2 size={16} />
+                          </button>
                         </div>
                       </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => startEditing(feedback)}
-                          className="text-indigo-400 hover:text-indigo-300"
-                        >
-                          <Edit size={16} />
-                        </button>
-                        <button
-                          onClick={() => removeFeedback(feedback.id)}
-                          className="text-red-400 hover:text-red-300"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
+                      <p className="text-gray-300 text-sm">{feedback.testimonial}</p>
                     </div>
-                    <p className="text-gray-300 text-sm">{feedback.testimonial}</p>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )
             )}
           </div>
         </div>
