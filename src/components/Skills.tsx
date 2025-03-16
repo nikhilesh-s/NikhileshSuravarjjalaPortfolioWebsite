@@ -1,7 +1,15 @@
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import { fadeIn, textVariant, staggerContainer } from '../utils/motion';
+import { getSkills } from '../services/dataService';
 
-const skills = [
+interface Skill {
+  name: string;
+  level: number;
+  color: string;
+}
+
+const defaultSkills = [
   {
     name: "React",
     level: 90,
@@ -31,6 +39,33 @@ const skills = [
 ];
 
 const Skills = () => {
+  const [skills, setSkills] = useState<Skill[]>(defaultSkills);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSkillsData = async () => {
+      try {
+        setIsLoading(true);
+        const data = await getSkills();
+        if (data && Array.isArray(data) && data.length > 0) {
+          setSkills(data);
+        } else {
+          // Fallback to localStorage if Firebase data is not available
+          const localData = localStorage.getItem('skills');
+          if (localData) {
+            setSkills(JSON.parse(localData));
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching skills data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSkillsData();
+  }, []);
+
   return (
     <motion.section 
       id="skills" 
@@ -51,40 +86,36 @@ const Skills = () => {
           <div className="w-20 h-1 bg-indigo-500 mx-auto rounded-full"></div>
         </motion.div>
 
-        <motion.div 
-          variants={fadeIn("", "", 0.1, 1)}
-          className="grid grid-cols-1 md:grid-cols-2 gap-8"
-        >
-          {skills.map((skill, index) => (
-            <motion.div
-              key={skill.name}
-              variants={fadeIn("up", "spring", index * 0.1, 0.75)}
-              whileHover={{ scale: 1.02, y: -5 }}
-              transition={{ type: "spring", stiffness: 300 }}
-              className="transform transition-all duration-300"
-            >
-              <div className="bg-secondary p-6 rounded-lg hover:shadow-lg hover:shadow-indigo-500/20">
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className="text-white text-lg font-medium">{skill.name}</h3>
-                  <span className={`text-${skill.color}-400`}>{skill.level}%</span>
+        {isLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {skills.map((skill, index) => (
+              <motion.div
+                key={skill.name}
+                variants={fadeIn('right', 'spring', index * 0.3, 0.5)}
+                className="bg-tertiary rounded-xl p-6 shadow-lg"
+              >
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="text-xl font-semibold text-white">{skill.name}</h3>
+                  <span className="text-indigo-400 font-semibold">{skill.level}%</span>
                 </div>
-                <div className="w-full bg-tertiary rounded-full h-2.5 overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    whileInView={{ width: `${skill.level}%` }}
-                    viewport={{ once: true }}
-                    transition={{ 
-                      duration: 1.5, 
-                      delay: 0.2 + index * 0.1,
-                      ease: "easeOut"
-                    }}
-                    className={`h-2.5 rounded-full bg-${skill.color}-500`}
-                  ></motion.div>
+
+                <div className="w-full bg-gray-700 rounded-full h-3">
+                  <div 
+                    className={`rounded-full h-full ${skill.color === 'blue' ? 'bg-blue-500' : 
+                      skill.color === 'green' ? 'bg-green-500' : 
+                      skill.color === 'pink' ? 'bg-pink-500' : 
+                      skill.color === 'orange' ? 'bg-orange-500' : 'bg-indigo-500'}`}
+                    style={{ width: `${skill.level}%` }}
+                  ></div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
     </motion.section>
   );
