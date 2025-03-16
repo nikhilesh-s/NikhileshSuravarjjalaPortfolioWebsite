@@ -7,6 +7,7 @@
     "dev": "VITE_SILENT=1 NODE_OPTIONS=--max_old_space_size=4096 vite --host",
     "dev:lowperf": "VITE_SILENT=1 vite",
     "build": "tsc -b && vite build",
+    "vercel-build": "node vercel-build.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -15,6 +16,7 @@
     "@react-three/drei": "^9.88.0",
     "@react-three/fiber": "^8.15.11",
     "@types/react-router-dom": "^5.3.3",
+    "firebase": "^11.4.0",
     "framer-motion": "^10.16.4",
     "lucide-react": "^0.292.0",
     "maath": "^0.10.4",
@@ -36,6 +38,7 @@
     "postcss": "^8.4.31",
     "tailwindcss": "^3.3.5",
     "typescript": "^5.2.2",
+    "vercel": "^41.4.1",
     "vite": "^4.5.0"
   }
 }
