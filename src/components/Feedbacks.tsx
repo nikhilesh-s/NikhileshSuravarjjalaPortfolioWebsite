@@ -1,10 +1,12 @@
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
 import { fadeIn, titleContentSlideIn } from "../utils/motion";
 import { styles } from "../styles";
 import { SectionWrapper } from "../utils/wrapper";
+import { getFeedbacks } from "../services/dataService";
 
-// Skill categories with their skills
-const skillCategories = [
+// Fallback skills data
+const fallbackSkillCategories = [
   {
     title: "Frontend Development",
     skills: ["React", "NextJS", "TypeScript", "TailwindCSS", "Redux", "HTML5/CSS3", "JavaScript", "Vue.js"]
@@ -49,38 +51,89 @@ const SkillCategory = ({ title, skills, index }: { title: string; skills: string
   );
 };
 
-// Feedbacks component (renamed to Skills in display)
 const Feedbacks = () => {
+  // Removing unused feedbacks state variable to fix lint warning
+  const [skillCategories, setSkillCategories] = useState(fallbackSkillCategories);
+  const [isLoading, setIsLoading] = useState(true);
   const animations = titleContentSlideIn();
-  
+
+  useEffect(() => {
+    const fetchFeedbacks = async () => {
+      try {
+        setIsLoading(true);
+        const data = await getFeedbacks();
+        if (data && data.length > 0) {
+          // If we have skills data in feedbacks, update skill categories
+          if (data[0]?.skillCategories) {
+            setSkillCategories(data[0].skillCategories);
+          }
+        } else {
+          // Fallback to localStorage
+          const localFeedbacks = localStorage.getItem('portfolio-feedbacks');
+          if (localFeedbacks) {
+            try {
+              const parsedFeedbacks = JSON.parse(localFeedbacks);
+              // If we have skills data in feedbacks, update skill categories
+              if (parsedFeedbacks[0]?.skillCategories) {
+                setSkillCategories(parsedFeedbacks[0].skillCategories);
+              }
+            } catch (e) {
+              console.error("Error parsing localStorage feedbacks:", e);
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching feedback data:", error);
+        // Try localStorage as fallback
+        const localFeedbacks = localStorage.getItem('portfolio-feedbacks');
+        if (localFeedbacks) {
+          try {
+            const parsedFeedbacks = JSON.parse(localFeedbacks);
+            // If we have skills data in feedbacks, update skill categories
+            if (parsedFeedbacks[0]?.skillCategories) {
+              setSkillCategories(parsedFeedbacks[0].skillCategories);
+            }
+          } catch (e) {
+            console.error("Error parsing localStorage feedbacks:", e);
+          }
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFeedbacks();
+  }, []);
+
   return (
     <div id="skills" className="padding-x padding-y max-w-7xl mx-auto relative z-0">
-      <motion.div 
+      <motion.div
         initial="hidden"
         whileInView="show"
         viewport={{ once: true }}
         variants={animations.title}
+        className="mb-12"
       >
-        <p className={styles.sectionSubText}>My technical expertise</p>
-        <h2 className={styles.sectionHeadText}>Skills & Competencies</h2>
+        <p className={styles.sectionSubText}>My capabilities</p>
+        <h2 className={styles.sectionHeadText}>Skills.</h2>
       </motion.div>
 
-      <motion.div 
-        className="mt-12 flex flex-wrap justify-between"
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true }}
-        variants={animations.content}
-      >
-        {skillCategories.map((category, index) => (
-          <SkillCategory 
-            key={index}
-            title={category.title}
-            skills={category.skills}
-            index={index}
-          />
-        ))}
-      </motion.div>
+      {isLoading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+        </div>
+      ) : (
+        <div className="flex flex-wrap justify-between gap-4">
+          {skillCategories.map((category, index) => (
+            <SkillCategory
+              key={category.title}
+              title={category.title}
+              skills={category.skills}
+              index={index}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

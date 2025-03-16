@@ -1,13 +1,60 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { getHero } from '../services/dataService';
 
 const Hero = () => {
   const [loopNum, setLoopNum] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
-  const roles = ["Software Developer", "Full Stack Developer", "Student"];
+  const [roles, setRoles] = useState(["Software Developer", "Full Stack Developer", "Student"]);
   const [text, setText] = useState('');
   const [delta, setDelta] = useState(150 - Math.random() * 50);
   const period = 1500;
+  const [heroData, setHeroData] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchHeroData = async () => {
+      try {
+        const data = await getHero();
+        if (data) {
+          setHeroData(data);
+          if (data.roles && Array.isArray(data.roles) && data.roles.length > 0) {
+            setRoles(data.roles);
+          }
+        } else {
+          // Try localStorage as fallback
+          const localHero = localStorage.getItem('portfolio-hero');
+          if (localHero) {
+            try {
+              const parsedHero = JSON.parse(localHero);
+              setHeroData(parsedHero);
+              if (parsedHero.roles && Array.isArray(parsedHero.roles) && parsedHero.roles.length > 0) {
+                setRoles(parsedHero.roles);
+              }
+            } catch (e) {
+              console.error("Error parsing localStorage hero data:", e);
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching hero data:", error);
+        // Try localStorage as fallback
+        const localHero = localStorage.getItem('portfolio-hero');
+        if (localHero) {
+          try {
+            const parsedHero = JSON.parse(localHero);
+            setHeroData(parsedHero);
+            if (parsedHero.roles && Array.isArray(parsedHero.roles) && parsedHero.roles.length > 0) {
+              setRoles(parsedHero.roles);
+            }
+          } catch (e) {
+            console.error("Error parsing localStorage hero data:", e);
+          }
+        }
+      }
+    };
+
+    fetchHeroData();
+  }, []);
 
   useEffect(() => {
     let ticker = setInterval(() => {
@@ -50,54 +97,58 @@ const Hero = () => {
           transition={{ duration: 0.8 }}
           className="w-full md:w-1/2 text-center md:text-left"
         >
-          <h1 className="text-5xl md:text-7xl font-bold text-white mb-4">
-            Hi, I'm <span className="text-indigo-500">Nikhilesh</span>
+          <h1 className="text-5xl sm:text-6xl font-bold text-white">
+            Hi, I'm {heroData?.name || 'Nikhilesh'}
           </h1>
-          <h2 className="text-2xl md:text-3xl font-medium text-gray-300 mb-6">
-            I'm a{" "}
-            <span className="text-indigo-400">
-              {text}
-            </span>
-          </h2>
-          <p className="text-gray-400 text-lg mb-8 max-w-md">
-            Passionate about creating innovative solutions and learning new technologies.
-            Let's build something amazing together.
+          <div className="flex items-center justify-center md:justify-start h-16 mt-5">
+            <span className="text-indigo-500 text-4xl font-semibold">I'm a </span>
+            <span className="text-white text-4xl font-semibold ml-2">{text}</span>
+            <span className="text-indigo-500 text-4xl font-semibold animate-blink">|</span>
+          </div>
+          <p className="text-gray-300 mt-6 text-lg max-w-lg mx-auto md:mx-0">
+            {heroData?.description || 'Building the future with clean, elegant code. Currently working on cutting-edge web applications and exploring the frontiers of technology.'}
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-            <a
-              href="#projects"
-              className="px-8 py-3 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition-colors duration-300"
-            >
-              View My Work
-            </a>
-            <a
-              href="#contact"
-              className="px-8 py-3 border-2 border-indigo-600 text-indigo-400 rounded-full hover:bg-indigo-600 hover:text-white transition-colors duration-300"
+          <div className="mt-10 flex flex-wrap justify-center md:justify-start gap-4">
+            <a 
+              href="#contact" 
+              className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors duration-300 flex items-center gap-2"
             >
               Contact Me
             </a>
+            <a 
+              href={heroData?.resumeLink || '#'}
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="px-6 py-3 border border-white text-white hover:bg-white hover:text-indigo-900 font-medium rounded-lg transition-colors duration-300"
+            >
+              Resume
+            </a>
           </div>
         </motion.div>
-
-        {/* 3D Element Container */}
-        <motion.div
+        
+        {/* Image */}
+        <motion.div 
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
-          className="w-full md:w-1/2 mt-12 md:mt-0 flex justify-center items-center"
+          className="w-full md:w-1/2 mt-12 md:mt-0 flex justify-center"
         >
-          <div className="w-72 h-72 rounded-full bg-indigo-500/20 flex items-center justify-center relative">
-            <div className="w-64 h-64 rounded-full bg-indigo-500/30 absolute"></div>
-            <div className="w-56 h-56 rounded-full bg-indigo-500/40 absolute"></div>
-            {/* We'll add a 3D model or profile image here later */}
+          <div className="relative">
+            <div className="absolute -inset-0.5 bg-indigo-600 rounded-full blur-lg opacity-75 animate-pulse"></div>
+            <img 
+              src={heroData?.image || "/hero-image.png"} 
+              alt="hero" 
+              className="max-w-full h-auto rounded-full border-4 border-indigo-500 z-10 relative"
+              style={{ width: '400px', height: '400px', objectFit: 'cover' }}
+            />
           </div>
         </motion.div>
       </div>
 
-      {/* Scroll Indicator */}
+      {/* Scroll down indicator */}
       <div className="absolute xs:bottom-10 bottom-32 w-full flex justify-center items-center">
         <a href="#about">
-          <div className="w-[35px] h-[64px] rounded-3xl border-4 border-gray-400 flex justify-center items-start p-2">
+          <div className="w-[35px] h-[64px] rounded-3xl border-4 border-white flex justify-center items-start p-2">
             <motion.div
               animate={{
                 y: [0, 24, 0],
@@ -107,7 +158,7 @@ const Hero = () => {
                 repeat: Infinity,
                 repeatType: "loop",
               }}
-              className="w-3 h-3 rounded-full bg-gray-400 mb-1"
+              className="w-3 h-3 rounded-full bg-white"
             />
           </div>
         </a>
