@@ -20,4 +20,22 @@ export default defineConfig({
       '@types': '/src/types',
     },
   },
+  optimizeDeps: {
+    include: ['zustand']
+  },
+  build: {
+    commonjsOptions: {
+      include: [/node_modules/],
+    },
+    rollupOptions: {
+      onwarn(warning, warn) {
+        // Ignore certain warnings
+        if (warning.code === 'MODULE_LEVEL_DIRECTIVE' || 
+            warning.message.includes('zustand')) {
+          return;
+        }
+        warn(warning);
+      }
+    }
+  }
 });
