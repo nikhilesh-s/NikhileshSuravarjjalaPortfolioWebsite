@@ -8,6 +8,7 @@ import { Github } from "lucide-react";
 import { ExternalLink } from "lucide-react";
 import { styles } from "../styles";
 import { SectionWrapper } from "../utils/wrapper";
+import { getProjects } from "../services/dataService";
 
 const ProjectCard = ({
   index,
@@ -74,16 +75,43 @@ const ProjectCard = ({
 
 const Works = () => {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const animations = titleContentSlideIn();
 
   useEffect(() => {
-    // Load projects from localStorage or use defaults
-    const savedProjects = localStorage.getItem('portfolio-projects');
-    if (savedProjects) {
-      setProjects(JSON.parse(savedProjects));
-    } else {
-      setProjects(defaultProjects);
-    }
+    // Fetch projects from Firebase with localStorage fallback
+    const fetchProjects = async () => {
+      try {
+        setIsLoading(true);
+        // Try to get projects from Firebase
+        const firebaseProjects = await getProjects();
+        
+        if (firebaseProjects && firebaseProjects.length > 0) {
+          setProjects(firebaseProjects);
+        } else {
+          // Fallback to localStorage if Firebase doesn't have data
+          const savedProjects = localStorage.getItem('portfolio-projects');
+          if (savedProjects) {
+            setProjects(JSON.parse(savedProjects));
+          } else {
+            setProjects(defaultProjects);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+        // If Firebase fails, try localStorage
+        const savedProjects = localStorage.getItem('portfolio-projects');
+        if (savedProjects) {
+          setProjects(JSON.parse(savedProjects));
+        } else {
+          setProjects(defaultProjects);
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchProjects();
   }, []);
   
   return (
@@ -103,22 +131,16 @@ const Works = () => {
         whileInView="show"
         viewport={{ once: true }}
         variants={animations.content}
-        className="w-full flex"
+        className="mt-20 flex flex-row flex-wrap justify-center gap-7"
       >
-        <p className="mt-3 text-secondary text-[17px] max-w-3xl leading-[30px]">
-          The following projects showcase my skills and experience through
-          real-world examples of my work. Each project is briefly described with
-          links to code repositories and live demos. They reflect my
-          ability to solve complex problems, work with different technologies,
-          and manage projects effectively.
-        </p>
+        {isLoading ? (
+          <p className="text-white">Loading projects...</p>
+        ) : (
+          projects.map((project, index) => (
+            <ProjectCard key={`project-${index}`} index={index} {...project} />
+          ))
+        )}
       </motion.div>
-
-      <div className="mt-20 flex flex-wrap gap-7 justify-center">
-        {projects.map((project, index) => (
-          <ProjectCard key={`project-${index}`} index={index} {...project} />
-        ))}
-      </div>
     </div>
   );
 };

@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { styles } from "../styles";
 import { SectionWrapper } from "../utils/wrapper";
 import { titleContentSlideIn } from "../utils/motion";
+import { getExperiences } from "../services/dataService";
 
 const ExperienceCard = ({ experience }: { experience: ExperienceType }) => {
   return (
@@ -54,16 +55,43 @@ const ExperienceCard = ({ experience }: { experience: ExperienceType }) => {
 
 const Experience = () => {
   const [experiences, setExperiences] = useState<ExperienceType[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const animations = titleContentSlideIn();
 
   useEffect(() => {
-    // Load experiences from localStorage or use defaults
-    const savedExperiences = localStorage.getItem('portfolio-experiences');
-    if (savedExperiences) {
-      setExperiences(JSON.parse(savedExperiences));
-    } else {
-      setExperiences(defaultExperiences);
-    }
+    // Fetch experiences from Firebase with localStorage fallback
+    const fetchExperiences = async () => {
+      try {
+        setIsLoading(true);
+        // Try to get experiences from Firebase
+        const firebaseExperiences = await getExperiences();
+        
+        if (firebaseExperiences && firebaseExperiences.length > 0) {
+          setExperiences(firebaseExperiences);
+        } else {
+          // Fallback to localStorage if Firebase doesn't have data
+          const savedExperiences = localStorage.getItem('portfolio-experiences');
+          if (savedExperiences) {
+            setExperiences(JSON.parse(savedExperiences));
+          } else {
+            setExperiences(defaultExperiences);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching experiences:", error);
+        // If Firebase fails, try localStorage
+        const savedExperiences = localStorage.getItem('portfolio-experiences');
+        if (savedExperiences) {
+          setExperiences(JSON.parse(savedExperiences));
+        } else {
+          setExperiences(defaultExperiences);
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchExperiences();
   }, []);
 
   return (
@@ -87,11 +115,15 @@ const Experience = () => {
         viewport={{ once: true }}
         variants={animations.content}
       >
-        <VerticalTimeline>
-          {experiences.map((experience, index) => (
-            <ExperienceCard key={index} experience={experience} />
-          ))}
-        </VerticalTimeline>
+        {isLoading ? (
+          <p className="text-white">Loading experiences...</p>
+        ) : (
+          <VerticalTimeline>
+            {experiences.map((experience, index) => (
+              <ExperienceCard key={index} experience={experience} />
+            ))}
+          </VerticalTimeline>
+        )}
       </motion.div>
     </div>
   );
