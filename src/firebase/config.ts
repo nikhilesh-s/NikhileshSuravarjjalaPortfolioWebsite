@@ -1,21 +1,23 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+import { getAnalytics } from "firebase/analytics";
 
 // Your web app's Firebase configuration
-// Replace these with your actual Firebase config values from the Firebase console
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "YOUR_API_KEY",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "YOUR_PROJECT_ID",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "YOUR_MESSAGING_SENDER_ID",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "YOUR_APP_ID"
+  apiKey: "AIzaSyAA_qhMd8ir_Rv0yi1MKGab3I0B6-BNdto",
+  authDomain: "nikhilesh-suravarjjala-port.firebaseapp.com",
+  projectId: "nikhilesh-suravarjjala-port",
+  storageBucket: "nikhilesh-suravarjjala-port.firebasestorage.app",
+  messagingSenderId: "830536262241",
+  appId: "1:830536262241:web:2e523b7f24624c9e08c020",
+  measurementId: "G-16WFGBBHYR"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
 
-export { db, auth };
+export { db, auth, analytics };
