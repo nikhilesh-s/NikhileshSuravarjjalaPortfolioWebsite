@@ -1,26 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Project } from '../types';
-import { ArrowLeft, Plus, Trash2, Save, Edit, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Save, Edit, ExternalLink, Github } from 'lucide-react';
+import { getProjects, saveProjects } from '../services/dataService';
 
 const ProjectEditor: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [currentProject, setCurrentProject] = useState<Project | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' });
+  const [isLoading, setIsLoading] = useState(true);
   
-  // Load projects from localStorage on component mount
+  // Load projects from Firebase on component mount
   useEffect(() => {
-    const savedProjects = localStorage.getItem('portfolio-projects');
-    if (savedProjects) {
-      setProjects(JSON.parse(savedProjects));
-    }
+    const fetchProjects = async () => {
+      try {
+        setIsLoading(true);
+        const firebaseProjects = await getProjects();
+        
+        if (firebaseProjects && firebaseProjects.length > 0) {
+          setProjects(firebaseProjects);
+        } else {
+          // Fallback to localStorage if no data in Firebase
+          const savedProjects = localStorage.getItem('portfolio-projects');
+          if (savedProjects) {
+            setProjects(JSON.parse(savedProjects));
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+        // Fallback to localStorage if Firebase fails
+        const savedProjects = localStorage.getItem('portfolio-projects');
+        if (savedProjects) {
+          setProjects(JSON.parse(savedProjects));
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchProjects();
   }, []);
-  
-  // Save projects to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem('portfolio-projects', JSON.stringify(projects));
-  }, [projects]);
   
   const handleAddNew = () => {
     const newProject: Project = {
@@ -40,16 +60,45 @@ const ProjectEditor: React.FC = () => {
     setIsEditing(true);
   };
   
-  const handleDeleteProject = (project: Project) => {
+  const handleDeleteProject = async (project: Project) => {
     if (window.confirm('Are you sure you want to delete this project?')) {
+      setIsLoading(true);
       const updatedProjects = projects.filter(p => p.name !== project.name);
-      setProjects(updatedProjects);
       
-      setMessage({ 
-        text: 'Project deleted successfully!', 
-        type: 'success' 
-      });
-      setTimeout(() => setMessage({ text: '', type: '' }), 3000);
+      // Save to Firebase
+      try {
+        const saveSuccess = await saveProjects(updatedProjects);
+        if (saveSuccess) {
+          setProjects(updatedProjects);
+          // Also update localStorage as backup
+          localStorage.setItem('portfolio-projects', JSON.stringify(updatedProjects));
+          
+          setMessage({ 
+            text: 'Project deleted successfully from Firebase!', 
+            type: 'success' 
+          });
+        } else {
+          setMessage({
+            text: 'Error deleting from Firebase. Changes saved locally only.',
+            type: 'error'
+          });
+          // Still update local state and localStorage
+          setProjects(updatedProjects);
+          localStorage.setItem('portfolio-projects', JSON.stringify(updatedProjects));
+        }
+      } catch (error) {
+        console.error("Error deleting project:", error);
+        setMessage({
+          text: 'Error deleting from Firebase. Changes saved locally only.',
+          type: 'error'
+        });
+        // Still update local state and localStorage
+        setProjects(updatedProjects);
+        localStorage.setItem('portfolio-projects', JSON.stringify(updatedProjects));
+      } finally {
+        setIsLoading(false);
+        setTimeout(() => setMessage({ text: '', type: '' }), 3000);
+      }
     }
   };
   
@@ -58,9 +107,10 @@ const ProjectEditor: React.FC = () => {
     setIsEditing(false);
   };
   
-  const handleSaveProject = () => {
+  const handleSaveProject = async () => {
     if (!currentProject) return;
     
+    setIsLoading(true);
     // Check if it's a new project or an existing one
     const existingIndex = projects.findIndex(p => p.name === currentProject.name);
     let updatedProjects;
@@ -74,15 +124,42 @@ const ProjectEditor: React.FC = () => {
       updatedProjects = [...projects, currentProject];
     }
     
-    setProjects(updatedProjects);
-    setCurrentProject(null);
-    setIsEditing(false);
-    
-    setMessage({ 
-      text: 'Project saved successfully!', 
-      type: 'success' 
-    });
-    setTimeout(() => setMessage({ text: '', type: '' }), 3000);
+    // Save to Firebase
+    try {
+      const saveSuccess = await saveProjects(updatedProjects);
+      if (saveSuccess) {
+        setProjects(updatedProjects);
+        // Also update localStorage as backup
+        localStorage.setItem('portfolio-projects', JSON.stringify(updatedProjects));
+        
+        setMessage({ 
+          text: 'Project saved successfully to Firebase!', 
+          type: 'success' 
+        });
+      } else {
+        setMessage({
+          text: 'Error saving to Firebase. Changes saved locally only.',
+          type: 'error'
+        });
+        // Still update local state and localStorage
+        setProjects(updatedProjects);
+        localStorage.setItem('portfolio-projects', JSON.stringify(updatedProjects));
+      }
+    } catch (error) {
+      console.error("Error saving projects:", error);
+      setMessage({
+        text: 'Error saving to Firebase. Changes saved locally only.',
+        type: 'error'
+      });
+      // Still update local state and localStorage
+      setProjects(updatedProjects);
+      localStorage.setItem('portfolio-projects', JSON.stringify(updatedProjects));
+    } finally {
+      setIsLoading(false);
+      setCurrentProject(null);
+      setIsEditing(false);
+      setTimeout(() => setMessage({ text: '', type: '' }), 3000);
+    }
   };
   
   const handleUpdateField = (field: string, value: any) => {
@@ -167,228 +244,271 @@ const ProjectEditor: React.FC = () => {
   };
   
   return (
-    <div className="bg-primary text-white min-h-screen p-8">
+    <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
-        <div className="flex items-center gap-4 mb-8">
-          <Link to="/admin" className="p-2 bg-tertiary rounded-full hover:bg-purple-700 transition-colors">
-            <ArrowLeft size={24} />
+        <div className="flex items-center justify-between mb-8">
+          <Link to="/admin" className="flex items-center text-blue-400 hover:text-blue-300">
+            <ArrowLeft className="mr-2" size={20} />
+            Back to Dashboard
           </Link>
-          <h1 className="text-3xl font-bold">Manage Projects</h1>
+          <h1 className="text-3xl font-bold">Projects Editor</h1>
         </div>
         
         {message.text && (
-          <div className={`mb-6 p-4 rounded-lg ${message.type === 'success' ? 'bg-green-800' : 'bg-red-800'}`}>
+          <div className={`p-4 mb-6 rounded-md ${message.type === 'success' ? 'bg-green-800' : 'bg-red-800'}`}>
             {message.text}
           </div>
         )}
         
-        {!isEditing ? (
-          <div className="bg-tertiary p-6 rounded-xl mb-8">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold">All Projects</h2>
-              <button 
-                onClick={handleAddNew}
-                className="px-4 py-2 bg-purple-600 rounded-lg hover:bg-purple-500 transition-colors flex items-center gap-2"
-              >
-                <Plus size={16} />
-                Add New Project
-              </button>
-            </div>
-            
-            {projects.length === 0 ? (
-              <div className="text-center py-12 text-gray-400">
-                No projects yet. Click "Add New Project" to get started.
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {projects.map((project, index) => (
-                  <div key={index} className="bg-gray-800 rounded-lg p-4 hover:bg-gray-700 transition-colors">
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-lg font-semibold">{project.name}</h3>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleEditProject(project)}
-                          className="text-indigo-400 hover:text-indigo-300"
-                        >
-                          <Edit size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteProject(project)}
-                          className="text-red-400 hover:text-red-300"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </div>
-                    
-                    <p className="text-gray-400 text-sm mb-3 line-clamp-2">{project.description}</p>
-                    
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {project.tags.map((tag, tagIndex) => (
-                        <span key={tagIndex} className={`px-2 py-1 rounded-full text-xs ${tag.color} bg-black`}>
-                          {tag.name}
-                        </span>
-                      ))}
-                    </div>
-                    
-                    <div className="flex gap-3">
-                      {project.source_code_link && (
-                        <a href={project.source_code_link} target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:text-indigo-300 text-sm flex items-center gap-1">
-                          <ExternalLink size={12} />
-                          Source Code
-                        </a>
-                      )}
-                      {project.live_demo_link && (
-                        <a href={project.live_demo_link} target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:text-indigo-300 text-sm flex items-center gap-1">
-                          <ExternalLink size={12} />
-                          Live Demo
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+        {isLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
           </div>
-        ) : (
-          <div className="bg-tertiary p-6 rounded-xl mb-8">
-            <h2 className="text-xl font-bold mb-6">{currentProject?.name ? 'Edit Project' : 'New Project'}</h2>
+        ) : isEditing ? (
+          <div className="bg-gray-800 rounded-xl p-6 shadow-md">
+            <h2 className="text-2xl font-bold mb-6">{currentProject?.name ? `Editing: ${currentProject.name}` : 'New Project'}</h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Project Editor Form */}
+            <div className="space-y-6">
+              {/* Project Name */}
               <div>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium mb-2">Project Name</label>
-                  <input
-                    type="text"
-                    value={currentProject?.name || ''}
-                    onChange={(e) => handleUpdateField('name', e.target.value)}
-                    className="w-full bg-gray-800 p-3 rounded-lg text-white"
-                  />
-                </div>
-                
-                <div className="mb-4">
-                  <label className="block text-sm font-medium mb-2">Description</label>
-                  <textarea
-                    value={currentProject?.description || ''}
-                    onChange={(e) => handleUpdateField('description', e.target.value)}
-                    className="w-full bg-gray-800 p-3 rounded-lg text-white h-32 resize-none"
-                  />
-                </div>
-                
-                <div className="mb-4">
-                  <label className="block text-sm font-medium mb-2">Image URL</label>
-                  <input
-                    type="text"
-                    value={currentProject?.image || ''}
-                    onChange={(e) => handleUpdateField('image', e.target.value)}
-                    className="w-full bg-gray-800 p-3 rounded-lg text-white"
-                  />
-                </div>
+                <label className="block mb-2 text-sm font-medium">Project Name</label>
+                <input
+                  type="text"
+                  value={currentProject?.name || ''}
+                  onChange={(e) => handleUpdateField('name', e.target.value)}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                />
               </div>
               
+              {/* Project Description */}
               <div>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium mb-2">Source Code Link</label>
-                  <input
-                    type="text"
-                    value={currentProject?.source_code_link || ''}
-                    onChange={(e) => handleUpdateField('source_code_link', e.target.value)}
-                    className="w-full bg-gray-800 p-3 rounded-lg text-white"
-                  />
-                </div>
-                
-                <div className="mb-4">
-                  <label className="block text-sm font-medium mb-2">Live Demo Link</label>
-                  <input
-                    type="text"
-                    value={currentProject?.live_demo_link || ''}
-                    onChange={(e) => handleUpdateField('live_demo_link', e.target.value)}
-                    className="w-full bg-gray-800 p-3 rounded-lg text-white"
-                  />
-                </div>
-                
-                <div className="mb-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <label className="text-sm font-medium">Tags</label>
-                    <button
-                      onClick={handleAddTag}
-                      className="px-2 py-1 bg-purple-600 rounded-lg hover:bg-purple-500 transition-colors flex items-center gap-1 text-xs"
-                    >
-                      <Plus size={12} />
-                      Add Tag
-                    </button>
+                <label className="block mb-2 text-sm font-medium">Description</label>
+                <textarea
+                  value={currentProject?.description || ''}
+                  onChange={(e) => handleUpdateField('description', e.target.value)}
+                  rows={4}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                />
+              </div>
+              
+              {/* Project Image */}
+              <div>
+                <label className="block mb-2 text-sm font-medium">Image URL</label>
+                <input
+                  type="text"
+                  value={currentProject?.image || ''}
+                  onChange={(e) => handleUpdateField('image', e.target.value)}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                />
+                {currentProject?.image && (
+                  <div className="mt-2 h-32 w-full bg-cover bg-center rounded-md" style={{ backgroundImage: `url(${currentProject.image})` }}>
                   </div>
-                  
-                  <div className="bg-gray-800 rounded-lg p-3">
-                    {currentProject?.tags.map((tag, index) => (
-                      <div key={index} className="flex items-center gap-2 mb-2">
-                        <input
-                          type="text"
-                          value={tag.name}
-                          onChange={(e) => handleUpdateTag(index, 'name', e.target.value)}
-                          className="flex-1 bg-gray-700 p-2 rounded text-white text-sm"
-                          placeholder="Tag name"
-                        />
-                        <select
-                          value={tag.color}
-                          onChange={(e) => handleUpdateTag(index, 'color', e.target.value)}
-                          className="bg-gray-700 p-2 rounded text-white text-sm"
-                        >
-                          <option value="text-white">White</option>
-                          <option value="text-blue-500">Blue</option>
-                          <option value="text-green-500">Green</option>
-                          <option value="text-red-500">Red</option>
-                          <option value="text-yellow-500">Yellow</option>
-                          <option value="text-purple-500">Purple</option>
-                          <option value="text-pink-500">Pink</option>
-                        </select>
-                        <button
-                          onClick={() => handleRemoveTag(index)}
-                          className="text-red-400 hover:text-red-300 p-1"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    ))}
-                    {currentProject?.tags.length === 0 && (
-                      <p className="text-gray-500 text-sm p-2">No tags added yet.</p>
-                    )}
-                  </div>
+                )}
+              </div>
+              
+              {/* Source Code Link */}
+              <div>
+                <label className="block mb-2 text-sm font-medium">Source Code URL</label>
+                <input
+                  type="text"
+                  value={currentProject?.source_code_link || ''}
+                  onChange={(e) => handleUpdateField('source_code_link', e.target.value)}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                />
+              </div>
+              
+              {/* Live Demo Link */}
+              <div>
+                <label className="block mb-2 text-sm font-medium">Live Demo URL</label>
+                <input
+                  type="text"
+                  value={currentProject?.live_demo_link || ''}
+                  onChange={(e) => handleUpdateField('live_demo_link', e.target.value)}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                />
+              </div>
+              
+              {/* Tags */}
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <label className="text-sm font-medium">Tags</label>
+                  <button 
+                    onClick={handleAddTag}
+                    className="text-sm bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded-md flex items-center"
+                  >
+                    <Plus size={16} className="mr-1" />
+                    Add Tag
+                  </button>
                 </div>
                 
                 <div className="mb-4">
-                  <h3 className="text-sm font-medium mb-2">Pre-built Tags</h3>
+                  <div className="text-sm text-gray-400 mb-2">Quick Add:</div>
                   <div className="flex flex-wrap gap-2">
                     {preBuiltTags.map((tag, index) => (
                       <button
                         key={index}
                         onClick={() => handleAddPreBuiltTag(tag)}
-                        className={`px-2 py-1 rounded-full text-xs ${tag.color} bg-black`}
+                        className={`px-2 py-1 rounded-md bg-gray-700 hover:bg-gray-600 text-xs ${tag.color}`}
                       >
                         {tag.name}
                       </button>
                     ))}
                   </div>
                 </div>
+                
+                {currentProject?.tags.map((tag, index) => (
+                  <div key={index} className="flex items-center mb-2 p-2 bg-gray-700 rounded-md">
+                    <div className="flex-1 mr-2">
+                      <input
+                        type="text"
+                        value={tag.name}
+                        onChange={(e) => handleUpdateTag(index, 'name', e.target.value)}
+                        className="w-full px-2 py-1 bg-gray-600 border border-gray-500 rounded-md text-white text-sm"
+                        placeholder="Tag name"
+                      />
+                    </div>
+                    <div className="flex-1 mr-2">
+                      <select
+                        value={tag.color}
+                        onChange={(e) => handleUpdateTag(index, 'color', e.target.value)}
+                        className="w-full px-2 py-1 bg-gray-600 border border-gray-500 rounded-md text-white text-sm"
+                      >
+                        <option value="text-white">White</option>
+                        <option value="text-blue-400">Blue</option>
+                        <option value="text-green-400">Green</option>
+                        <option value="text-red-400">Red</option>
+                        <option value="text-yellow-400">Yellow</option>
+                        <option value="text-purple-400">Purple</option>
+                        <option value="text-pink-400">Pink</option>
+                        <option value="text-indigo-400">Indigo</option>
+                        <option value="text-orange-400">Orange</option>
+                      </select>
+                    </div>
+                    <button
+                      onClick={() => handleRemoveTag(index)}
+                      className="p-1 bg-red-600 hover:bg-red-700 rounded-md"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Action Buttons */}
+              <div className="flex justify-end space-x-4 mt-8">
+                <button
+                  onClick={handleCancelEdit}
+                  className="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-md"
+                  disabled={isLoading}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveProject}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md flex items-center"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save size={18} className="mr-2" />
+                      Save Project
+                    </>
+                  )}
+                </button>
               </div>
             </div>
-            
-            <div className="flex justify-end gap-4 mt-6">
+          </div>
+        ) : (
+          <>
+            <div className="mb-6 flex justify-between items-center">
+              <h2 className="text-xl">Manage your projects</h2>
               <button
-                onClick={handleCancelEdit}
-                className="px-4 py-2 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
+                onClick={handleAddNew}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md flex items-center"
+                disabled={isLoading}
               >
-                Cancel
-              </button>
-              <button
-                onClick={handleSaveProject}
-                className="px-4 py-2 bg-green-600 rounded-lg hover:bg-green-500 transition-colors flex items-center gap-2"
-              >
-                <Save size={16} />
-                Save Project
+                <Plus size={18} className="mr-2" />
+                Add New Project
               </button>
             </div>
-          </div>
+            
+            {projects.length === 0 ? (
+              <div className="bg-gray-800 rounded-xl p-8 text-center">
+                <p className="text-gray-400">No projects yet. Add your first project!</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {projects.map((project, index) => (
+                  <div key={index} className="bg-gray-800 rounded-xl overflow-hidden shadow-md">
+                    <div className="h-48 bg-cover bg-center" style={{ backgroundImage: `url(${project.image})` }}>
+                    </div>
+                    <div className="p-6">
+                      <h3 className="text-xl font-bold mb-2">{project.name}</h3>
+                      <p className="text-gray-300 mb-4 line-clamp-3">{project.description}</p>
+                      
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {project.tags.map((tag, tagIndex) => (
+                          <span key={tagIndex} className={`px-2 py-1 rounded-full bg-gray-700 text-xs ${tag.color}`}>
+                            {tag.name}
+                          </span>
+                        ))}
+                      </div>
+                      
+                      <div className="flex justify-between mt-4">
+                        <div className="space-x-2">
+                          {project.source_code_link && (
+                            <a
+                              href={project.source_code_link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-block p-2 bg-gray-700 hover:bg-gray-600 rounded-md"
+                              title="Source Code"
+                            >
+                              <Github size={18} />
+                            </a>
+                          )}
+                          {project.live_demo_link && (
+                            <a
+                              href={project.live_demo_link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-block p-2 bg-gray-700 hover:bg-gray-600 rounded-md"
+                              title="Live Demo"
+                            >
+                              <ExternalLink size={18} />
+                            </a>
+                          )}
+                        </div>
+                        
+                        <div className="space-x-2">
+                          <button
+                            onClick={() => handleEditProject(project)}
+                            className="p-2 bg-blue-600 hover:bg-blue-700 rounded-md"
+                            disabled={isLoading}
+                          >
+                            <Edit size={18} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteProject(project)}
+                            className="p-2 bg-red-600 hover:bg-red-700 rounded-md"
+                            disabled={isLoading}
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
