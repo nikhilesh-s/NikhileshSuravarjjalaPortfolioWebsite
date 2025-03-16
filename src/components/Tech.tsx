@@ -5,6 +5,7 @@ import { technologies as defaultTechnologies } from "../constants";
 import { fadeIn, titleContentSlideIn } from "../utils/motion";
 import { SectionWrapper } from "../utils/wrapper";
 import { Technology } from "../types";
+import { getTechnologies } from "../services/dataService";
 
 const TechCard = ({ name, icon, index }: { name: string; icon: string; index: number }) => {
   // Special styling for ThreeJS
@@ -34,14 +35,39 @@ const TechCard = ({ name, icon, index }: { name: string; icon: string; index: nu
 
 const Tech = () => {
   const [technologies, setTechnologies] = useState<Technology[]>(defaultTechnologies);
+  const [isLoading, setIsLoading] = useState(true);
   const animations = titleContentSlideIn();
   
-  // Load technologies from localStorage if available
+  // Load technologies from Firebase or localStorage if available
   useEffect(() => {
-    const savedTechnologies = localStorage.getItem('portfolio-technologies');
-    if (savedTechnologies) {
-      setTechnologies(JSON.parse(savedTechnologies));
-    }
+    const fetchTechnologies = async () => {
+      try {
+        setIsLoading(true);
+        // Try to get technologies from Firebase
+        const firebaseTechnologies = await getTechnologies();
+        
+        if (firebaseTechnologies && firebaseTechnologies.length > 0) {
+          setTechnologies(firebaseTechnologies);
+        } else {
+          // Fallback to localStorage if Firebase doesn't have data
+          const savedTechnologies = localStorage.getItem('portfolio-technologies');
+          if (savedTechnologies) {
+            setTechnologies(JSON.parse(savedTechnologies));
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching technologies:", error);
+        // If Firebase fails, try localStorage
+        const savedTechnologies = localStorage.getItem('portfolio-technologies');
+        if (savedTechnologies) {
+          setTechnologies(JSON.parse(savedTechnologies));
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchTechnologies();
   }, []);
   
   return (
@@ -63,13 +89,17 @@ const Tech = () => {
         variants={animations.content}
         className="mt-20 flex flex-wrap gap-10 justify-center"
       >
-        {technologies.map((technology, index) => (
-          <TechCard
-            key={technology.name}
-            index={index}
-            {...technology}
-          />
-        ))}
+        {isLoading ? (
+          <p>Loading technologies...</p>
+        ) : (
+          technologies.map((technology, index) => (
+            <TechCard
+              key={technology.name}
+              index={index}
+              {...technology}
+            />
+          ))
+        )}
       </motion.div>
     </div>
   );

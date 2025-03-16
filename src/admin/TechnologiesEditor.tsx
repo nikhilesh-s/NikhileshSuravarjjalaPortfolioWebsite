@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, Plus, X, Check, Edit, Trash } from 'lucide-react';
 import { Technology } from '../types';
 import { technologies as defaultTechnologies } from '../constants';
+import { saveTechnologies as saveTechnologiesToFirebase, getTechnologies as getTechnologiesFromFirebase } from '../services/dataService';
 
 const TechnologiesEditor: React.FC = () => {
   const [technologies, setTechnologies] = useState<Technology[]>([]);
@@ -10,37 +11,80 @@ const TechnologiesEditor: React.FC = () => {
   const [currentTech, setCurrentTech] = useState<Technology | null>(null);
   const [newTech, setNewTech] = useState<{ name: string; icon: string }>({ name: '', icon: '' });
   const [successMessage, setSuccessMessage] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Load technologies from localStorage or use defaults
+  // Load technologies from Firebase or use defaults
   useEffect(() => {
-    const savedTechnologies = localStorage.getItem('portfolio-technologies');
-    if (savedTechnologies) {
-      setTechnologies(JSON.parse(savedTechnologies));
-    } else {
-      setTechnologies(defaultTechnologies);
-    }
+    const fetchTechnologies = async () => {
+      setIsLoading(true);
+      try {
+        const data = await getTechnologiesFromFirebase();
+        if (data && data.length > 0) {
+          setTechnologies(data);
+        } else {
+          // If no data in Firebase, try localStorage as fallback
+          const savedTechnologies = localStorage.getItem('portfolio-technologies');
+          if (savedTechnologies) {
+            const parsedTechnologies = JSON.parse(savedTechnologies);
+            setTechnologies(parsedTechnologies);
+            // Save localStorage data to Firebase
+            await saveTechnologiesToFirebase(parsedTechnologies);
+          } else {
+            setTechnologies(defaultTechnologies);
+          }
+        }
+      } catch (error) {
+        console.error("Error loading technologies:", error);
+        setTechnologies(defaultTechnologies);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchTechnologies();
   }, []);
 
-  // Save changes to localStorage
-  const saveTechnologies = (updatedTechnologies: Technology[]) => {
-    localStorage.setItem('portfolio-technologies', JSON.stringify(updatedTechnologies));
-    setTechnologies(updatedTechnologies);
+  // Save changes to Firebase and localStorage for backup
+  const saveTechnologies = async (updatedTechnologies: Technology[]) => {
+    try {
+      // Save to Firebase
+      const result = await saveTechnologiesToFirebase(updatedTechnologies);
+      // Also save to localStorage as backup
+      localStorage.setItem('portfolio-technologies', JSON.stringify(updatedTechnologies));
+      
+      if (result) {
+        setTechnologies(updatedTechnologies);
+        return true;
+      } else {
+        console.error("Failed to save to Firebase");
+        return false;
+      }
+    } catch (error) {
+      console.error("Error saving technologies:", error);
+      return false;
+    }
   };
 
   // Add new technology
-  const handleAddTechnology = (e: React.FormEvent) => {
+  const handleAddTechnology = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newTech.name && newTech.icon) {
       const updatedTechnologies = [...technologies, newTech];
-      saveTechnologies(updatedTechnologies);
-      setNewTech({ name: '', icon: '' });
-      setSuccessMessage('Technology added successfully!');
-      setTimeout(() => setSuccessMessage(''), 3000);
+      const success = await saveTechnologies(updatedTechnologies);
+      
+      if (success) {
+        setNewTech({ name: '', icon: '' });
+        setSuccessMessage('Technology added successfully!');
+        setTimeout(() => setSuccessMessage(''), 3000);
+      } else {
+        setSuccessMessage('Failed to add technology. Please try again.');
+        setTimeout(() => setSuccessMessage(''), 3000);
+      }
     }
   };
 
   // Edit existing technology
-  const handleEditTechnology = (e: React.FormEvent) => {
+  const handleEditTechnology = async (e: React.FormEvent) => {
     e.preventDefault();
     if (currentTech && currentTech.name && currentTech.icon) {
       const updatedTechnologies = technologies.map(tech => 
@@ -48,11 +92,18 @@ const TechnologiesEditor: React.FC = () => {
           ? currentTech 
           : tech
       );
-      saveTechnologies(updatedTechnologies);
-      setCurrentTech(null);
-      setIsEditing(false);
-      setSuccessMessage('Technology updated successfully!');
-      setTimeout(() => setSuccessMessage(''), 3000);
+      
+      const success = await saveTechnologies(updatedTechnologies);
+      
+      if (success) {
+        setCurrentTech(null);
+        setIsEditing(false);
+        setSuccessMessage('Technology updated successfully!');
+        setTimeout(() => setSuccessMessage(''), 3000);
+      } else {
+        setSuccessMessage('Failed to update technology. Please try again.');
+        setTimeout(() => setSuccessMessage(''), 3000);
+      }
     }
   };
 
@@ -63,13 +114,20 @@ const TechnologiesEditor: React.FC = () => {
   };
 
   // Delete a technology
-  const handleDeleteTechnology = (techToDelete: Technology) => {
+  const handleDeleteTechnology = async (techToDelete: Technology) => {
     const updatedTechnologies = technologies.filter(tech => 
       tech.name !== techToDelete.name || tech.icon !== techToDelete.icon
     );
-    saveTechnologies(updatedTechnologies);
-    setSuccessMessage('Technology removed successfully!');
-    setTimeout(() => setSuccessMessage(''), 3000);
+    
+    const success = await saveTechnologies(updatedTechnologies);
+    
+    if (success) {
+      setSuccessMessage('Technology removed successfully!');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } else {
+      setSuccessMessage('Failed to remove technology. Please try again.');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    }
   };
 
   return (
@@ -92,41 +150,50 @@ const TechnologiesEditor: React.FC = () => {
           </div>
         )}
 
-        {/* Technologies List */}
-        <div className="bg-gray-800 rounded-lg p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4">Current Technologies</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {technologies.map((tech, index) => (
-              <div 
-                key={index} 
-                className="bg-gray-700 rounded-lg p-4 flex items-center justify-between"
-              >
-                <div className="flex items-center">
-                  <div className="w-10 h-10 bg-gray-600 rounded-md flex items-center justify-center mr-3">
-                    {tech.icon && (
-                      <img src={tech.icon} alt={tech.name} className="w-6 h-6 object-contain" />
-                    )}
-                  </div>
-                  <span>{tech.name}</span>
-                </div>
-                <div className="flex space-x-2">
-                  <button 
-                    onClick={() => startEdit(tech)}
-                    className="p-1.5 rounded-md bg-blue-500 hover:bg-blue-600"
-                  >
-                    <Edit size={16} />
-                  </button>
-                  <button 
-                    onClick={() => handleDeleteTechnology(tech)}
-                    className="p-1.5 rounded-md bg-red-500 hover:bg-red-600"
-                  >
-                    <Trash size={16} />
-                  </button>
-                </div>
-              </div>
-            ))}
+        {/* Loading State */}
+        {isLoading && (
+          <div className="bg-gray-800 rounded-lg p-6 mb-8">
+            <h2 className="text-xl font-semibold mb-4">Loading...</h2>
           </div>
-        </div>
+        )}
+
+        {/* Technologies List */}
+        {!isLoading && (
+          <div className="bg-gray-800 rounded-lg p-6 mb-8">
+            <h2 className="text-xl font-semibold mb-4">Current Technologies</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {technologies.map((tech, index) => (
+                <div 
+                  key={index} 
+                  className="bg-gray-700 rounded-lg p-4 flex items-center justify-between"
+                >
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 bg-gray-600 rounded-md flex items-center justify-center mr-3">
+                      {tech.icon && (
+                        <img src={tech.icon} alt={tech.name} className="w-6 h-6 object-contain" />
+                      )}
+                    </div>
+                    <span>{tech.name}</span>
+                  </div>
+                  <div className="flex space-x-2">
+                    <button 
+                      onClick={() => startEdit(tech)}
+                      className="p-1.5 rounded-md bg-blue-500 hover:bg-blue-600"
+                    >
+                      <Edit size={16} />
+                    </button>
+                    <button 
+                      onClick={() => handleDeleteTechnology(tech)}
+                      className="p-1.5 rounded-md bg-red-500 hover:bg-red-600"
+                    >
+                      <Trash size={16} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Add/Edit Technology Form */}
         <div className="bg-gray-800 rounded-lg p-6">

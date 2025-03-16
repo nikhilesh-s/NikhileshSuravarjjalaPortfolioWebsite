@@ -1,20 +1,11 @@
 {
+  "framework": "vite",
   "rewrites": [
     {
       "source": "/(.*)",
       "destination": "/index.html"
     }
   ],
-  "github": {
-    "silent": true
-  },
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/node",
-      "config": {
-        "buildCommand": "npm run vercel-build"
-      }
-    }
-  ]
+  "buildCommand": "npm run build",
+  "installCommand": "npm install"
 }

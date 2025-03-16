@@ -6,8 +6,7 @@
   "scripts": {
     "dev": "VITE_SILENT=1 NODE_OPTIONS=--max_old_space_size=4096 vite --host",
     "dev:lowperf": "VITE_SILENT=1 vite",
-    "build": "tsc -b && vite build",
-    "vercel-build": "node vercel-build.js",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
