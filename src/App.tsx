@@ -19,6 +19,7 @@ import AdminAuth from './admin/AdminAuth';
 import ProtectedRoute from './utils/ProtectedRoute';
 import SetupAdmin from './admin/SetupAdmin';
 import EnvDebug from './admin/EnvDebug';
+import FirebaseTest from './pages/FirebaseTest';
 
 const MainContent = () => (
   <div className="relative z-0 bg-primary">
@@ -62,6 +63,7 @@ const App = () => {
           <Route path="/" element={<MainContent />} />
           <Route path="/resume" element={<PageLayout><ResumeSimple /></PageLayout>} />
           <Route path="/journey" element={<PageLayout><Journey /></PageLayout>} />
+          <Route path="/firebase-test" element={<FirebaseTest />} />
           
           {/* Admin routes */}
           <Route path="/admin/login" element={<AdminAuth />} />
