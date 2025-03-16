@@ -30,19 +30,39 @@ const fallbackProjects: Project[] = [
 const Projects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [timestamp, setTimestamp] = useState(Date.now()); // Used for cache busting
+
+  // Function to force refresh data
+  const refreshData = () => {
+    setTimestamp(Date.now());
+    setIsLoading(true);
+  };
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        console.log("Fetching projects from Firebase...");
+        console.log(`[${new Date().toISOString()}] Fetching projects from Firebase... Timestamp: ${timestamp}`);
         setIsLoading(true);
+        
+        // Clear any local caches
+        if (typeof window !== 'undefined') {
+          try {
+            sessionStorage.clear();
+            localStorage.removeItem('portfolio-projects');
+            console.log("Cleared browser storage to prevent stale data");
+          } catch (e) {
+            console.warn("Could not clear storage", e);
+          }
+        }
+        
         const firebaseProjects = await getProjects();
-        console.log("Firebase projects data:", firebaseProjects);
+        console.log(`[${new Date().toISOString()}] Firebase projects data:`, 
+          firebaseProjects ? `${firebaseProjects.length} projects retrieved` : "No projects found");
         
         if (firebaseProjects && Array.isArray(firebaseProjects) && firebaseProjects.length > 0) {
           // Convert from the format used in ProjectEditor to the format used here
           const formattedProjects = firebaseProjects.map((project: any) => {
-            console.log("Processing project:", project);
+            console.log(`Processing project: ${project.name || project.title || "Untitled"}`);
             return {
               title: project.name || project.title || "Untitled Project",
               description: project.description || "No description provided",
@@ -54,15 +74,16 @@ const Projects = () => {
               demoLink: project.live_demo_link || project.demoLink || "#"
             };
           });
-          console.log("Formatted projects for display:", formattedProjects);
+          console.log(`[${new Date().toISOString()}] Formatted projects for display:`, 
+            formattedProjects.map(p => p.title).join(", "));
           setProjects(formattedProjects);
         } else {
-          console.log("No projects found in Firebase, using fallback example project");
+          console.log(`[${new Date().toISOString()}] No projects found in Firebase, using fallback`);
           setProjects(fallbackProjects);
         }
       } catch (error) {
-        console.error("Error fetching projects from Firebase:", error);
-        console.log("Using fallback example project due to error");
+        console.error(`[${new Date().toISOString()}] Error fetching projects from Firebase:`, error);
+        console.log(`[${new Date().toISOString()}] Using fallback example project due to error`);
         setProjects(fallbackProjects);
       } finally {
         setIsLoading(false);
@@ -70,7 +91,18 @@ const Projects = () => {
     };
     
     fetchProjects();
-  }, []);
+    
+    // Set up an interval to refresh data every minute if the component is visible
+    const refreshInterval = setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        console.log(`[${new Date().toISOString()}] Auto-refreshing projects data`);
+        refreshData();
+      }
+    }, 60000); // 1 minute
+    
+    // Clear interval on component unmount
+    return () => clearInterval(refreshInterval);
+  }, [timestamp]); // Re-run when timestamp changes
 
   return (
     <section id="projects" className="min-h-screen py-20 bg-primary">
@@ -86,6 +118,12 @@ const Projects = () => {
             My <span className="text-indigo-500">Projects</span>
           </h2>
           <div className="w-20 h-1 bg-indigo-500 mx-auto rounded-full"></div>
+          <button 
+            onClick={refreshData}
+            className="mt-4 text-sm text-indigo-400 hover:text-indigo-300"
+          >
+            Refresh Projects
+          </button>
         </motion.div>
 
         {isLoading ? (
