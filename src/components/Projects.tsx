@@ -15,15 +15,15 @@ interface Project {
   live_demo_link?: string;
 }
 
-// Fallback projects if Firebase fails
+// Fallback projects if Firebase is completely unavailable
 const fallbackProjects: Project[] = [
   {
-    title: "Project 1",
-    description: "Description of your first project. Highlight the key features and technologies used.",
-    tags: ["React", "TypeScript", "Node.js"],
+    title: "Example Project",
+    description: "This is an example project shown when Firebase data is unavailable. Please check your Firebase connection.",
+    tags: ["React", "TypeScript", "Firebase"],
     image: "/project1.png",
-    githubLink: "https://github.com/yourusername/project1",
-    demoLink: "https://project1-demo.com"
+    githubLink: "#",
+    demoLink: "#"
   }
 ];
 
@@ -34,10 +34,10 @@ const Projects = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        console.log("Fetching projects...");
+        console.log("Fetching projects from Firebase...");
         setIsLoading(true);
         const firebaseProjects = await getProjects();
-        console.log("Firebase projects:", firebaseProjects);
+        console.log("Firebase projects data:", firebaseProjects);
         
         if (firebaseProjects && Array.isArray(firebaseProjects) && firebaseProjects.length > 0) {
           // Convert from the format used in ProjectEditor to the format used here
@@ -54,62 +54,16 @@ const Projects = () => {
               demoLink: project.live_demo_link || project.demoLink || "#"
             };
           });
-          console.log("Formatted projects:", formattedProjects);
+          console.log("Formatted projects for display:", formattedProjects);
           setProjects(formattedProjects);
         } else {
-          console.log("No Firebase projects found, checking localStorage");
-          // Fallback to localStorage if no data in Firebase
-          const savedProjects = localStorage.getItem('portfolio-projects');
-          if (savedProjects) {
-            try {
-              const parsedProjects = JSON.parse(savedProjects);
-              console.log("Projects from localStorage:", parsedProjects);
-              const formattedProjects = parsedProjects.map((project: any) => ({
-                title: project.name || project.title || "Untitled Project",
-                description: project.description || "No description provided",
-                tags: Array.isArray(project.tags) 
-                  ? project.tags.map((tag: any) => typeof tag === 'string' ? tag : (tag.name || "")) 
-                  : [],
-                image: project.image || "/project1.png",
-                githubLink: project.source_code_link || project.githubLink || "#",
-                demoLink: project.live_demo_link || project.demoLink || "#"
-              }));
-              console.log("Formatted localStorage projects:", formattedProjects);
-              setProjects(formattedProjects);
-            } catch (error) {
-              console.error("Failed to parse projects from localStorage:", error);
-              setProjects(fallbackProjects);
-            }
-          } else {
-            console.log("Using fallback projects");
-            setProjects(fallbackProjects);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-        // Fallback to localStorage if Firebase fails
-        const savedProjects = localStorage.getItem('portfolio-projects');
-        if (savedProjects) {
-          try {
-            const parsedProjects = JSON.parse(savedProjects);
-            const formattedProjects = parsedProjects.map((project: any) => ({
-              title: project.name || project.title || "Untitled Project",
-              description: project.description || "No description provided",
-              tags: Array.isArray(project.tags) 
-                ? project.tags.map((tag: any) => typeof tag === 'string' ? tag : (tag.name || "")) 
-                : [],
-              image: project.image || "/project1.png",
-              githubLink: project.source_code_link || project.githubLink || "#",
-              demoLink: project.live_demo_link || project.demoLink || "#"
-            }));
-            setProjects(formattedProjects);
-          } catch (error) {
-            console.error("Failed to parse projects from localStorage:", error);
-            setProjects(fallbackProjects);
-          }
-        } else {
+          console.log("No projects found in Firebase, using fallback example project");
           setProjects(fallbackProjects);
         }
+      } catch (error) {
+        console.error("Error fetching projects from Firebase:", error);
+        console.log("Using fallback example project due to error");
+        setProjects(fallbackProjects);
       } finally {
         setIsLoading(false);
       }

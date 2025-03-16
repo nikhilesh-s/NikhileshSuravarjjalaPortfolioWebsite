@@ -4,14 +4,12 @@ import { doc, setDoc, getDoc } from "firebase/firestore";
 // Generic function to save any collection data
 export const saveData = async (collectionName: string, data: any[]) => {
   try {
-    console.log(`Saving ${collectionName} data:`, data);
+    console.log(`Saving ${collectionName} data to Firebase:`, data);
     // Store as a single document with an array field for simplicity
     await setDoc(doc(db, "portfolioData", collectionName), { items: data });
-    // Save to localStorage as well for backup
-    localStorage.setItem(`portfolio-${collectionName}`, JSON.stringify(data));
     return true;
   } catch (error) {
-    console.error(`Error saving ${collectionName} data:`, error);
+    console.error(`Error saving ${collectionName} data to Firebase:`, error);
     return false;
   }
 };
@@ -25,46 +23,15 @@ export const getData = async (collectionName: string) => {
     
     if (docSnap.exists()) {
       const data = docSnap.data().items;
-      console.log(`Firebase ${collectionName} data:`, data);
-      
-      // Save to localStorage as backup
-      if (data && Array.isArray(data)) {
-        localStorage.setItem(`portfolio-${collectionName}`, JSON.stringify(data));
-      }
-      
+      console.log(`Firebase ${collectionName} data retrieved successfully:`, data);
       return data;
     } else {
-      console.log(`No ${collectionName} document exists in Firebase, checking localStorage...`);
-      // Try to get from localStorage
-      const localData = localStorage.getItem(`portfolio-${collectionName}`);
-      if (localData) {
-        try {
-          const parsedData = JSON.parse(localData);
-          console.log(`Using ${collectionName} data from localStorage:`, parsedData);
-          return parsedData;
-        } catch (e) {
-          console.error(`Error parsing ${collectionName} data from localStorage:`, e);
-        }
-      }
+      console.log(`No ${collectionName} document exists in Firebase.`);
       // Document doesn't exist, return empty array
       return [];
     }
   } catch (error) {
-    console.error(`Error getting ${collectionName} data:`, error);
-    
-    // Try to get from localStorage on error
-    console.log(`Trying to get ${collectionName} data from localStorage after Firebase error...`);
-    const localData = localStorage.getItem(`portfolio-${collectionName}`);
-    if (localData) {
-      try {
-        const parsedData = JSON.parse(localData);
-        console.log(`Using ${collectionName} data from localStorage after Firebase error:`, parsedData);
-        return parsedData;
-      } catch (e) {
-        console.error(`Error parsing ${collectionName} data from localStorage:`, e);
-      }
-    }
-    
+    console.error(`Error getting ${collectionName} data from Firebase:`, error);
     return [];
   }
 };
@@ -81,13 +48,11 @@ export const getExperiences = () => getData("experiences");
 
 export const saveCertifications = async (certifications: any[]) => {
   try {
-    console.log("Saving certifications data:", certifications);
+    console.log("Saving certifications data to Firebase:", certifications);
     await setDoc(doc(db, "portfolioData", "certifications"), { data: certifications });
-    // Save to localStorage as well for backup
-    localStorage.setItem('portfolio-certifications', JSON.stringify(certifications));
     return true;
   } catch (error) {
-    console.error("Error saving certifications data:", error);
+    console.error("Error saving certifications data to Firebase:", error);
     return false;
   }
 };
@@ -100,59 +65,25 @@ export const getCertifications = async () => {
     
     if (docSnap.exists()) {
       const data = docSnap.data().data;
-      console.log("Firebase certifications data:", data);
-      
-      // Save to localStorage as backup
-      if (data && Array.isArray(data)) {
-        localStorage.setItem('portfolio-certifications', JSON.stringify(data));
-      }
-      
+      console.log("Firebase certifications data retrieved successfully:", data);
       return data;
     } else {
-      console.log("No certifications document exists in Firebase, checking localStorage...");
-      // Try to get from localStorage
-      const localData = localStorage.getItem('portfolio-certifications');
-      if (localData) {
-        try {
-          const parsedData = JSON.parse(localData);
-          console.log("Using certifications data from localStorage:", parsedData);
-          return parsedData;
-        } catch (e) {
-          console.error("Error parsing certifications data from localStorage:", e);
-        }
-      }
-      // Document doesn't exist, return null
+      console.log("No certifications document exists in Firebase.");
       return null;
     }
   } catch (error) {
-    console.error("Error getting certifications data:", error);
-    
-    // Try to get from localStorage on error
-    console.log("Trying to get certifications data from localStorage after Firebase error...");
-    const localData = localStorage.getItem('portfolio-certifications');
-    if (localData) {
-      try {
-        const parsedData = JSON.parse(localData);
-        console.log("Using certifications data from localStorage after Firebase error:", parsedData);
-        return parsedData;
-      } catch (e) {
-        console.error("Error parsing certifications data from localStorage:", e);
-      }
-    }
-    
+    console.error("Error getting certifications data from Firebase:", error);
     return null;
   }
 };
 
 export const saveJourney = async (journey: any[]) => {
   try {
-    console.log("Saving journey data:", journey);
+    console.log("Saving journey data to Firebase:", journey);
     await setDoc(doc(db, "portfolioData", "journey"), { data: journey });
-    // Save to localStorage as well for backup
-    localStorage.setItem('portfolio-journey', JSON.stringify(journey));
     return true;
   } catch (error) {
-    console.error("Error saving journey data:", error);
+    console.error("Error saving journey data to Firebase:", error);
     return false;
   }
 };
@@ -165,46 +96,14 @@ export const getJourney = async () => {
     
     if (docSnap.exists()) {
       const data = docSnap.data().data;
-      console.log("Firebase journey data:", data);
-      
-      // Save to localStorage as backup
-      if (data && Array.isArray(data)) {
-        localStorage.setItem('portfolio-journey', JSON.stringify(data));
-      }
-      
+      console.log("Firebase journey data retrieved successfully:", data);
       return data;
     } else {
-      console.log("No journey document exists in Firebase, checking localStorage...");
-      // Try to get from localStorage
-      const localData = localStorage.getItem('portfolio-journey');
-      if (localData) {
-        try {
-          const parsedData = JSON.parse(localData);
-          console.log("Using journey data from localStorage:", parsedData);
-          return parsedData;
-        } catch (e) {
-          console.error("Error parsing journey data from localStorage:", e);
-        }
-      }
-      // Document doesn't exist, return null
+      console.log("No journey document exists in Firebase.");
       return null;
     }
   } catch (error) {
-    console.error("Error getting journey data:", error);
-    
-    // Try to get from localStorage on error
-    console.log("Trying to get journey data from localStorage after Firebase error...");
-    const localData = localStorage.getItem('portfolio-journey');
-    if (localData) {
-      try {
-        const parsedData = JSON.parse(localData);
-        console.log("Using journey data from localStorage after Firebase error:", parsedData);
-        return parsedData;
-      } catch (e) {
-        console.error("Error parsing journey data from localStorage:", e);
-      }
-    }
-    
+    console.error("Error getting journey data from Firebase:", error);
     return null;
   }
 };
@@ -214,13 +113,11 @@ export const getSkills = () => getData("skills");
 
 export const saveAbout = async (about: any) => {
   try {
-    console.log("Saving about data:", about);
+    console.log("Saving about data to Firebase:", about);
     await setDoc(doc(db, "portfolioData", "about"), { data: about });
-    // Save to localStorage as well for backup
-    localStorage.setItem('portfolio-about', JSON.stringify(about));
     return true;
   } catch (error) {
-    console.error("Error saving about data:", error);
+    console.error("Error saving about data to Firebase:", error);
     return false;
   }
 };
@@ -233,59 +130,25 @@ export const getAbout = async () => {
     
     if (docSnap.exists()) {
       const data = docSnap.data().data;
-      console.log("Firebase about data:", data);
-      
-      // Save to localStorage as backup
-      if (data) {
-        localStorage.setItem('portfolio-about', JSON.stringify(data));
-      }
-      
+      console.log("Firebase about data retrieved successfully:", data);
       return data;
     } else {
-      console.log("No about document exists in Firebase, checking localStorage...");
-      // Try to get from localStorage
-      const localData = localStorage.getItem('portfolio-about');
-      if (localData) {
-        try {
-          const parsedData = JSON.parse(localData);
-          console.log("Using about data from localStorage:", parsedData);
-          return parsedData;
-        } catch (e) {
-          console.error("Error parsing about data from localStorage:", e);
-        }
-      }
-      // Document doesn't exist, return null
+      console.log("No about document exists in Firebase.");
       return null;
     }
   } catch (error) {
-    console.error("Error getting about data:", error);
-    
-    // Try to get from localStorage on error
-    console.log("Trying to get about data from localStorage after Firebase error...");
-    const localData = localStorage.getItem('portfolio-about');
-    if (localData) {
-      try {
-        const parsedData = JSON.parse(localData);
-        console.log("Using about data from localStorage after Firebase error:", parsedData);
-        return parsedData;
-      } catch (e) {
-        console.error("Error parsing about data from localStorage:", e);
-      }
-    }
-    
+    console.error("Error getting about data from Firebase:", error);
     return null;
   }
 };
 
 export const saveContact = async (contact: any) => {
   try {
-    console.log("Saving contact data:", contact);
+    console.log("Saving contact data to Firebase:", contact);
     await setDoc(doc(db, "portfolioData", "contact"), { data: contact });
-    // Save to localStorage as well for backup
-    localStorage.setItem('portfolio-contact', JSON.stringify(contact));
     return true;
   } catch (error) {
-    console.error("Error saving contact data:", error);
+    console.error("Error saving contact data to Firebase:", error);
     return false;
   }
 };
@@ -298,59 +161,25 @@ export const getContact = async () => {
     
     if (docSnap.exists()) {
       const data = docSnap.data().data;
-      console.log("Firebase contact data:", data);
-      
-      // Save to localStorage as backup
-      if (data) {
-        localStorage.setItem('portfolio-contact', JSON.stringify(data));
-      }
-      
+      console.log("Firebase contact data retrieved successfully:", data);
       return data;
     } else {
-      console.log("No contact document exists in Firebase, checking localStorage...");
-      // Try to get from localStorage
-      const localData = localStorage.getItem('portfolio-contact');
-      if (localData) {
-        try {
-          const parsedData = JSON.parse(localData);
-          console.log("Using contact data from localStorage:", parsedData);
-          return parsedData;
-        } catch (e) {
-          console.error("Error parsing contact data from localStorage:", e);
-        }
-      }
-      // Document doesn't exist, return null
+      console.log("No contact document exists in Firebase.");
       return null;
     }
   } catch (error) {
-    console.error("Error getting contact data:", error);
-    
-    // Try to get from localStorage on error
-    console.log("Trying to get contact data from localStorage after Firebase error...");
-    const localData = localStorage.getItem('portfolio-contact');
-    if (localData) {
-      try {
-        const parsedData = JSON.parse(localData);
-        console.log("Using contact data from localStorage after Firebase error:", parsedData);
-        return parsedData;
-      } catch (e) {
-        console.error("Error parsing contact data from localStorage:", e);
-      }
-    }
-    
+    console.error("Error getting contact data from Firebase:", error);
     return null;
   }
 };
 
 export const saveHero = async (hero: any) => {
   try {
-    console.log("Saving hero data:", hero);
+    console.log("Saving hero data to Firebase:", hero);
     await setDoc(doc(db, "portfolioData", "hero"), { data: hero });
-    // Save to localStorage as well for backup
-    localStorage.setItem('portfolio-hero', JSON.stringify(hero));
     return true;
   } catch (error) {
-    console.error("Error saving hero data:", error);
+    console.error("Error saving hero data to Firebase:", error);
     return false;
   }
 };
@@ -363,59 +192,25 @@ export const getHero = async () => {
     
     if (docSnap.exists()) {
       const data = docSnap.data().data;
-      console.log("Firebase hero data:", data);
-      
-      // Save to localStorage as backup
-      if (data) {
-        localStorage.setItem('portfolio-hero', JSON.stringify(data));
-      }
-      
+      console.log("Firebase hero data retrieved successfully:", data);
       return data;
     } else {
-      console.log("No hero document exists in Firebase, checking localStorage...");
-      // Try to get from localStorage
-      const localData = localStorage.getItem('portfolio-hero');
-      if (localData) {
-        try {
-          const parsedData = JSON.parse(localData);
-          console.log("Using hero data from localStorage:", parsedData);
-          return parsedData;
-        } catch (e) {
-          console.error("Error parsing hero data from localStorage:", e);
-        }
-      }
-      // Document doesn't exist, return null
+      console.log("No hero document exists in Firebase.");
       return null;
     }
   } catch (error) {
-    console.error("Error getting hero data:", error);
-    
-    // Try to get from localStorage on error
-    console.log("Trying to get hero data from localStorage after Firebase error...");
-    const localData = localStorage.getItem('portfolio-hero');
-    if (localData) {
-      try {
-        const parsedData = JSON.parse(localData);
-        console.log("Using hero data from localStorage after Firebase error:", parsedData);
-        return parsedData;
-      } catch (e) {
-        console.error("Error parsing hero data from localStorage:", e);
-      }
-    }
-    
+    console.error("Error getting hero data from Firebase:", error);
     return null;
   }
 };
 
 export const saveFeedbacks = async (feedbacks: any[]) => {
   try {
-    console.log("Saving feedbacks data:", feedbacks);
+    console.log("Saving feedbacks data to Firebase:", feedbacks);
     await setDoc(doc(db, "portfolioData", "feedbacks"), { data: feedbacks });
-    // Save to localStorage as well for backup
-    localStorage.setItem('portfolio-feedbacks', JSON.stringify(feedbacks));
     return true;
   } catch (error) {
-    console.error("Error saving feedbacks data:", error);
+    console.error("Error saving feedbacks data to Firebase:", error);
     return false;
   }
 };
@@ -428,59 +223,25 @@ export const getFeedbacks = async () => {
     
     if (docSnap.exists()) {
       const data = docSnap.data().data;
-      console.log("Firebase feedbacks data:", data);
-      
-      // Save to localStorage as backup
-      if (data && Array.isArray(data)) {
-        localStorage.setItem('portfolio-feedbacks', JSON.stringify(data));
-      }
-      
+      console.log("Firebase feedbacks data retrieved successfully:", data);
       return data;
     } else {
-      console.log("No feedbacks document exists in Firebase, checking localStorage...");
-      // Try to get from localStorage
-      const localData = localStorage.getItem('portfolio-feedbacks');
-      if (localData) {
-        try {
-          const parsedData = JSON.parse(localData);
-          console.log("Using feedbacks data from localStorage:", parsedData);
-          return parsedData;
-        } catch (e) {
-          console.error("Error parsing feedbacks data from localStorage:", e);
-        }
-      }
-      // Document doesn't exist, return empty array
+      console.log("No feedbacks document exists in Firebase.");
       return [];
     }
   } catch (error) {
-    console.error("Error getting feedbacks data:", error);
-    
-    // Try to get from localStorage on error
-    console.log("Trying to get feedbacks data from localStorage after Firebase error...");
-    const localData = localStorage.getItem('portfolio-feedbacks');
-    if (localData) {
-      try {
-        const parsedData = JSON.parse(localData);
-        console.log("Using feedbacks data from localStorage after Firebase error:", parsedData);
-        return parsedData;
-      } catch (e) {
-        console.error("Error parsing feedbacks data from localStorage:", e);
-      }
-    }
-    
+    console.error("Error getting feedbacks data from Firebase:", error);
     return [];
   }
 };
 
 export const saveResume = async (resume: any) => {
   try {
-    console.log("Saving resume data:", resume);
+    console.log("Saving resume data to Firebase:", resume);
     await setDoc(doc(db, "portfolioData", "resume"), { data: resume });
-    // Save to localStorage as well for backup
-    localStorage.setItem('portfolio-resume', JSON.stringify(resume));
     return true;
   } catch (error) {
-    console.error("Error saving resume data:", error);
+    console.error("Error saving resume data to Firebase:", error);
     return false;
   }
 };
@@ -493,46 +254,14 @@ export const getResume = async () => {
     
     if (docSnap.exists()) {
       const data = docSnap.data().data;
-      console.log("Firebase resume data:", data);
-      
-      // Save to localStorage as backup
-      if (data) {
-        localStorage.setItem('portfolio-resume', JSON.stringify(data));
-      }
-      
+      console.log("Firebase resume data retrieved successfully:", data);
       return data;
     } else {
-      console.log("No resume document exists in Firebase, checking localStorage...");
-      // Try to get from localStorage
-      const localData = localStorage.getItem('portfolio-resume');
-      if (localData) {
-        try {
-          const parsedData = JSON.parse(localData);
-          console.log("Using resume data from localStorage:", parsedData);
-          return parsedData;
-        } catch (e) {
-          console.error("Error parsing resume data from localStorage:", e);
-        }
-      }
-      // Document doesn't exist, return null
+      console.log("No resume document exists in Firebase.");
       return null;
     }
   } catch (error) {
-    console.error("Error getting resume data:", error);
-    
-    // Try to get from localStorage on error
-    console.log("Trying to get resume data from localStorage after Firebase error...");
-    const localData = localStorage.getItem('portfolio-resume');
-    if (localData) {
-      try {
-        const parsedData = JSON.parse(localData);
-        console.log("Using resume data from localStorage after Firebase error:", parsedData);
-        return parsedData;
-      } catch (e) {
-        console.error("Error parsing resume data from localStorage:", e);
-      }
-    }
-    
+    console.error("Error getting resume data from Firebase:", error);
     return null;
   }
 };
