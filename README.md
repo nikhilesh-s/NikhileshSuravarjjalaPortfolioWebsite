@@ -1,54 +1,114 @@
-# React + TypeScript + Vite
+# Nikhilesh Suravarjjala Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![Portfolio Banner](public/hero-image.png)
 
-Currently, two official plugins are available:
+## Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This is my professional portfolio website showcasing my skills, projects, and experience as a software engineer. Built with modern technologies and best practices, this portfolio site features a sleek user interface with interactive elements and a comprehensive admin dashboard for easy content management.
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Responsive Design:** Optimal viewing experience across all devices
+- **Dynamic Content:** Projects, experience, and skills loaded from Firebase
+- **Interactive UI:** Smooth animations and transitions using Framer Motion
+- **Admin Dashboard:** Secure content management system
+- **Authentication:** Firebase authentication for secure admin access
+- **Cloud Storage:** Firebase Firestore for persistent data storage
+- **Performance Optimized:** Fast loading and rendering
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Technologies
+
+- **Frontend:** React, TypeScript, Tailwind CSS, Framer Motion
+- **Backend:** Firebase (Authentication, Firestore)
+- **Deployment:** Vercel
+- **Build Tool:** Vite
+- **Other:** React Router, React Tilt, Three.js (for 3D elements)
+
+## Motivation
+
+This portfolio serves as a digital representation of my professional journey and skills. It's designed to:
+
+1. Showcase my technical abilities and projects
+2. Provide potential employers and clients with a comprehensive view of my work
+3. Demonstrate my understanding of modern web development best practices
+4. Serve as a platform for continuous professional growth
+
+## Project Structure
+
+```
+src/
+├── admin/          # Admin dashboard components
+├── assets/         # Static assets
+├── components/     # Reusable UI components
+├── constants/      # Default data and constants
+├── context/        # React context providers
+├── firebase/       # Firebase configuration
+├── pages/          # Page components
+├── services/       # Service layer for data fetching
+├── styles/         # Global styles
+├── types/          # TypeScript type definitions
+└── utils/          # Utility functions
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Getting Started
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Prerequisites
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+- Node.js (v14 or higher)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository
+```bash
+git clone https://github.com/nikhilesh-s/NikhileshSuravarjjalaPortfolioWebsite.git
+cd NikhileshSuravarjjalaPortfolioWebsite
 ```
+
+2. Install dependencies
+```bash
+npm install
+# or
+yarn
+```
+
+3. Start the development server
+```bash
+npm run dev
+# or
+yarn dev
+```
+
+4. Open [http://localhost:5173](http://localhost:5173) to view it in the browser
+
+## Environment Variables
+
+To run this project with Firebase functionality, you need to set up the following environment variables:
+
+```
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+```
+
+## Deployment
+
+This project is automatically deployed to Vercel whenever changes are pushed to the main branch.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgements
+
+- [Three.js](https://threejs.org/) for 3D graphics
+- [Tailwind CSS](https://tailwindcss.com/) for styling
+- [Framer Motion](https://www.framer.com/motion/) for animations
+- [Firebase](https://firebase.google.com/) for backend services
+
+---
+
+Designed and developed by Nikhilesh Suravarjjala 2025
