@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Authentication Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #1a202c;
+            color: #e2e8f0;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #2d3748;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #63b3ed;
+            margin-top: 0;
+        }
+        button {
+            background-color: #4299e1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #3182ce;
+        }
+        input {
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #4a5568;
+            background-color: #1a202c;
+            color: white;
+            width: 100%;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #a0aec0;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        pre {
+            background-color: #1a202c;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #1a202c;
+            border-radius: 4px;
+        }
+        .success {
+            color: #68d391;
+        }
+        .error {
+            color: #fc8181;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Firebase Authentication Test</h1>
+        
+        <div>
+            <h2>Initialize Firebase</h2>
+            <button id="init-btn">Initialize Firebase</button>
+            <div id="init-result" class="result"></div>
+        </div>
+        
+        <div>
+            <h2>Create User</h2>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" placeholder="email@example.com">
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" placeholder="Password (min 6 characters)">
+            </div>
+            <button id="create-btn">Create User</button>
+            <div id="create-result" class="result"></div>
+        </div>
+        
+        <div>
+            <h2>Sign In</h2>
+            <div class="form-group">
+                <label for="login-email">Email:</label>
+                <input type="email" id="login-email" placeholder="email@example.com">
+            </div>
+            <div class="form-group">
+                <label for="login-password">Password:</label>
+                <input type="password" id="login-password" placeholder="Password">
+            </div>
+            <button id="login-btn">Sign In</button>
+            <div id="login-result" class="result"></div>
+        </div>
+        
+        <div>
+            <h2>Current Authentication Status</h2>
+            <button id="check-btn">Check Auth Status</button>
+            <div id="check-result" class="result"></div>
+        </div>
+    </div>
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
+        
+        // Firebase configuration directly hardcoded for testing
+        const firebaseConfig = {
+            apiKey: "AIzaSyAA_qhMd8ir_Rv0yi1MKGab3I0B6-BNdto",
+            authDomain: "nikhilesh-suravarjjala-port.firebaseapp.com",
+            projectId: "nikhilesh-suravarjjala-port",
+            storageBucket: "nikhilesh-suravarjjala-port.firebasestorage.app",
+            messagingSenderId: "830536262241",
+            appId: "1:830536262241:web:2e523b7f24624c9e08c020",
+        };
+        
+        let app;
+        let auth;
+        
+        // Initialize Firebase button
+        document.getElementById('init-btn').addEventListener('click', () => {
+            try {
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                
+                const result = document.getElementById('init-result');
+                result.innerHTML = '<span class="success">Firebase initialized successfully!</span>';
+                result.innerHTML += '<pre>' + JSON.stringify(firebaseConfig, null, 2) + '</pre>';
+                
+                // Set up auth state listener
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        document.getElementById('check-result').innerHTML = `<span class="success">User logged in: ${user.email}</span>`;
+                    } else {
+                        document.getElementById('check-result').innerHTML = '<span class="error">No user logged in</span>';
+                    }
+                });
+            } catch (error) {
+                const result = document.getElementById('init-result');
+                result.innerHTML = `<span class="error">Error initializing Firebase:</span>`;
+                result.innerHTML += `<pre>${error.code}\n${error.message}</pre>`;
+            }
+        });
+        
+        // Create user button
+        document.getElementById('create-btn').addEventListener('click', async () => {
+            if (!auth) {
+                document.getElementById('create-result').innerHTML = '<span class="error">Please initialize Firebase first</span>';
+                return;
+            }
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                
+                document.getElementById('create-result').innerHTML = `<span class="success">User created successfully: ${user.email}</span>`;
+            } catch (error) {
+                document.getElementById('create-result').innerHTML = `<span class="error">Error creating user:</span>`;
+                document.getElementById('create-result').innerHTML += `<pre>${error.code}\n${error.message}</pre>`;
+            }
+        });
+        
+        // Sign in button
+        document.getElementById('login-btn').addEventListener('click', async () => {
+            if (!auth) {
+                document.getElementById('login-result').innerHTML = '<span class="error">Please initialize Firebase first</span>';
+                return;
+            }
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                
+                document.getElementById('login-result').innerHTML = `<span class="success">User signed in successfully: ${user.email}</span>`;
+            } catch (error) {
+                document.getElementById('login-result').innerHTML = `<span class="error">Error signing in:</span>`;
+                document.getElementById('login-result').innerHTML += `<pre>${error.code}\n${error.message}</pre>`;
+            }
+        });
+        
+        // Check auth status button
+        document.getElementById('check-btn').addEventListener('click', () => {
+            if (!auth) {
+                document.getElementById('check-result').innerHTML = '<span class="error">Please initialize Firebase first</span>';
+                return;
+            }
+            
+            const user = auth.currentUser;
+            if (user) {
+                document.getElementById('check-result').innerHTML = `<span class="success">User logged in: ${user.email}</span>`;
+            } else {
+                document.getElementById('check-result').innerHTML = '<span class="error">No user logged in</span>';
+            }
+        });
+    </script>
+</body>
+</html>
