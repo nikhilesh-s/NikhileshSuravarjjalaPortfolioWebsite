@@ -26,7 +26,7 @@ const navLinks: NavLink[] = [
   },
   {
     id: "journey",
-    title: "My Journey",
+    title: "Career Exploration",
     isPage: true
   },
   {

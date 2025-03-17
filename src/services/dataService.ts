@@ -64,35 +64,54 @@ const technologies = [
 // Projects hardcoded data
 const projects = [
   {
-    id: "modern-portfolio",
-    name: "Modern Portfolio Website",
-    description: "A feature-rich portfolio website built with React, Three.js, and Tailwind CSS. Features 3D models, smooth animations, and a responsive design.",
-    longDescription: "This is my personal portfolio website built with modern web technologies. It showcases my work, skills, and experiences in a visually appealing and interactive way. The site features smooth animations, 3D elements, and a responsive design that adapts to any screen size.",
-    challenge: "The main challenge was creating a performant and visually appealing website that highlights my work while maintaining good accessibility and user experience across different devices.",
-    role: "Sole Developer: Designed and implemented the entire website from concept to deployment.",
+    id: "portfolio",
+    name: "3D Portfolio Website",
+    description: "A modern, interactive portfolio website built with React, Three.js, and Tailwind CSS, featuring 3D models, animations, and a responsive design to showcase my projects and skills.",
+    longDescription: "This portfolio website represents a significant milestone in my web development journey. It combines cutting-edge technologies like React, Three.js, and Framer Motion to create an immersive, interactive experience that truly represents my skills and personality. The site features 3D models, smooth animations, and a fully responsive design that adapts to any device size. I built this project to showcase my technical abilities and create a memorable platform for potential employers and clients to explore my work.",
+    challenge: "The main challenges included optimizing 3D model performance across devices, implementing smooth transitions and animations without affecting load times, and creating a cohesive design that balances visual appeal with usability. I also had to ensure the site remained accessible despite its heavy reliance on advanced visual elements.",
+    role: "Full-stack Developer: Designed and implemented the entire website from concept to deployment, including front-end development, responsive design, 3D model integration, performance optimization, and backend connectivity.",
     year: "2023-2024",
     timeline: "December 2023 - March 2024",
-    tools: "React, TypeScript, Three.js, Tailwind CSS, Framer Motion, Vite",
+    tools: "React, TypeScript, Three.js, Tailwind CSS, Framer Motion, Vite, EmailJS",
     tags: [
       { name: "React", color: "blue-text-gradient" },
       { name: "Three.js", color: "green-text-gradient" },
-      { name: "Tailwind CSS", color: "pink-text-gradient" },
-      { name: "Framer Motion", color: "orange-text-gradient" }
+      { name: "TypeScript", color: "pink-text-gradient" },
+      { name: "Tailwind CSS", color: "orange-text-gradient" },
+      { name: "Framer Motion", color: "purple-text-gradient" }
     ],
+    // Temporarily kept the existing image paths for the portfolio project until new screenshots are available
     image: "/carrent.png",
     images: [
       "/carrent.png"
     ],
-    source_code_link: "https://github.com/nikhilesh-s/nikhileshportfolio-v2",
+    source_code_link: "https://github.com/nikhilesh-s/NikhileshSuravarjjalaPortfolioWebsite",
     live_demo_link: "https://nikhileshsuravarjjala.vercel.app/",
     features: [
-      "3D models and animations",
-      "Responsive design for all device sizes",
-      "Interactive UI elements with smooth transitions",
-      "Performance optimized for fast loading",
-      "Contact form for easy communication"
+      "Interactive 3D models and animations using Three.js",
+      "Smooth page transitions and scrolling effects with Framer Motion",
+      "Fully responsive design that works on all device sizes",
+      "Dynamic project showcase with detailed individual project pages",
+      "Contact form with email integration",
+      "Performance-optimized 3D rendering",
+      "TypeScript for improved code reliability and maintainability",
+      "Dark mode aesthetic with vibrant accent colors"
     ],
-    goal: "Create a modern, visually appealing portfolio to showcase my projects and skills to potential employers and clients."
+    resources: [
+      {
+        name: "GitHub Repository",
+        url: "https://github.com/nikhilesh-s/NikhileshSuravarjjalaPortfolioWebsite"
+      },
+      {
+        name: "Live Website",
+        url: "https://nikhileshsuravarjjala.vercel.app/"
+      },
+      {
+        name: "Three.js Documentation",
+        url: "https://threejs.org/docs/"
+      }
+    ],
+    goal: "Create a standout portfolio website that demonstrates my technical skills while providing an engaging experience for visitors to learn about my projects and abilities."
   },
   {
     id: "backeaze",

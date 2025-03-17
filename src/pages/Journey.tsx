@@ -190,7 +190,7 @@ const Journey = () => {
           className="mt-20"
         >
           <p className={styles.sectionSubText}>A Look Back at My Career Path</p>
-          <h2 className={styles.sectionHeadText}>My Journey</h2>
+          <h2 className={styles.sectionHeadText}>Career Exploration</h2>
         </motion.div>
 
         <motion.p
@@ -200,7 +200,7 @@ const Journey = () => {
           className="mt-4 text-secondary text-[17px] max-w-3xl leading-[30px]"
         >
           This timeline showcases key moments, milestones, and experiences that have shaped my career 
-          in technology and software development. Slide the circle to navigate through my journey.
+          in technology and software development. Slide the circle to navigate through my career exploration.
         </motion.p>
 
         <motion.div
