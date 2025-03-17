@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Tilt } from "react-tilt";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { projects as defaultProjects } from "../constants";
 import { fadeIn, titleContentSlideIn } from "../utils/motion";
 import type { Project } from "../types";
@@ -12,6 +13,7 @@ import { getProjects } from "../services/dataService";
 
 const ProjectCard = ({
   index,
+  id,
   name,
   description,
   tags,
@@ -29,45 +31,53 @@ const ProjectCard = ({
         }}
         className="bg-tertiary p-5 rounded-2xl sm:w-[360px] w-full"
       >
-        <div className="relative w-full h-[230px]">
-          <img
-            src={image}
-            alt={name}
-            className="w-full h-full object-cover rounded-2xl"
-          />
+        <Link to={`/project/${id}`} className="block">
+          <div className="relative w-full h-[230px]">
+            <img
+              src={image}
+              alt={name}
+              className="w-full h-full object-cover rounded-2xl"
+            />
 
-          <div className="absolute inset-0 flex justify-end m-3 card-img_hover">
-            {source_code_link && (
-              <div
-                onClick={() => window.open(source_code_link, "_blank")}
-                className="black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer mr-2"
-              >
-                <Github className="w-1/2 h-1/2 object-contain" />
-              </div>
-            )}
-            {live_demo_link && (
-              <div
-                onClick={() => window.open(live_demo_link, "_blank")}
-                className="black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer"
-              >
-                <ExternalLink className="w-1/2 h-1/2 object-contain" />
-              </div>
-            )}
+            <div className="absolute inset-0 flex justify-end m-3 card-img_hover">
+              {source_code_link && (
+                <div
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.open(source_code_link, "_blank");
+                  }}
+                  className="black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer mr-2"
+                >
+                  <Github className="w-1/2 h-1/2 object-contain" />
+                </div>
+              )}
+              {live_demo_link && (
+                <div
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.open(live_demo_link, "_blank");
+                  }}
+                  className="black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer"
+                >
+                  <ExternalLink className="w-1/2 h-1/2 object-contain" />
+                </div>
+              )}
+            </div>
           </div>
-        </div>
 
-        <div className="mt-5">
-          <h3 className="text-white font-bold text-[24px]">{name}</h3>
-          <p className="mt-2 text-secondary text-[14px]">{description}</p>
-        </div>
+          <div className="mt-5">
+            <h3 className="text-white font-bold text-[24px]">{name}</h3>
+            <p className="mt-2 text-secondary text-[14px]">{description}</p>
+          </div>
 
-        <div className="mt-4 flex flex-wrap gap-2">
-          {tags.map((tag) => (
-            <p key={tag.name} className={`text-[14px] ${tag.color}`}>
-              #{tag.name}
-            </p>
-          ))}
-        </div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {tags.map((tag) => (
+              <p key={typeof tag === 'string' ? tag : tag.name} className={`text-[14px] ${typeof tag === 'string' ? 'blue-text-gradient' : tag.color}`}>
+                #{typeof tag === 'string' ? tag : tag.name}
+              </p>
+            ))}
+          </div>
+        </Link>
       </Tilt>
     </motion.div>
   );
@@ -87,14 +97,14 @@ const Works = () => {
         const firebaseProjects = await getProjects();
         
         if (firebaseProjects && firebaseProjects.length > 0) {
-          setProjects(firebaseProjects);
+          setProjects(firebaseProjects as Project[]);
         } else {
           // Fallback to localStorage if Firebase doesn't have data
           const savedProjects = localStorage.getItem('portfolio-projects');
           if (savedProjects) {
             setProjects(JSON.parse(savedProjects));
           } else {
-            setProjects(defaultProjects);
+            setProjects(defaultProjects as unknown as Project[]);
           }
         }
       } catch (error) {
@@ -104,7 +114,7 @@ const Works = () => {
         if (savedProjects) {
           setProjects(JSON.parse(savedProjects));
         } else {
-          setProjects(defaultProjects);
+          setProjects(defaultProjects as unknown as Project[]);
         }
       } finally {
         setIsLoading(false);

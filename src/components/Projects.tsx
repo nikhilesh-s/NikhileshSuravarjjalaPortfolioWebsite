@@ -1,220 +1,144 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Github, ExternalLink } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import Tilt from 'react-tilt';
 import { getProjects } from '../services/dataService';
+import { styles } from '../styles';
+import { SectionWrapper } from '../utils/wrapper';
+import { Project } from '../types';
 
-interface Project {
-  title?: string;
-  description: string;
-  tags: string[] | {name: string, color?: string}[];
-  image: string;
-  githubLink?: string;
-  demoLink?: string;
-  name?: string;
-  source_code_link?: string;
-  live_demo_link?: string;
-}
+const ProjectCard = ({ 
+  index, 
+  id, 
+  name, 
+  description, 
+  tags, 
+  image, 
+  source_code_link, 
+  live_demo_link 
+}: Project & { index: number }) => {
+  return (
+    <motion.div variants={{
+      hidden: { y: -50, opacity: 0 },
+      show: { y: 0, opacity: 1, transition: { type: 'spring', duration: 0.75, delay: index * 0.175 } }
+    }}>
+      <Tilt
+        options={{
+          max: 45,
+          scale: 1,
+          speed: 450,
+        }}
+        className="bg-tertiary p-5 rounded-2xl sm:w-[360px] w-full"
+      >
+        <Link to={`/project/${id}`} className="block">
+          <div className="relative w-full h-[230px]">
+            <img 
+              src={image} 
+              alt={name} 
+              className="w-full h-full object-cover rounded-2xl"
+            />
+            <div className="absolute inset-0 flex justify-end m-3 card-img_hover">
+              {source_code_link && (
+                <div
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.open(source_code_link, "_blank");
+                  }}
+                  className="black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer mr-2"
+                >
+                  <Github className="w-1/2 h-1/2 object-contain" />
+                </div>
+              )}
+              {live_demo_link && (
+                <div
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.open(live_demo_link, "_blank");
+                  }}
+                  className="black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer"
+                >
+                  <ExternalLink className="w-1/2 h-1/2 object-contain" />
+                </div>
+              )}
+            </div>
+          </div>
 
-// Fallback projects if Firebase is completely unavailable
-const fallbackProjects: Project[] = [
-  {
-    title: "Example Project",
-    description: "This is an example project shown when Firebase data is unavailable. Please check your Firebase connection.",
-    tags: ["React", "TypeScript", "Firebase"],
-    image: "/project1.png",
-    githubLink: "#",
-    demoLink: "#"
-  }
-];
+          <div className="mt-5">
+            <h3 className="text-white font-bold text-[24px]">{name}</h3>
+            <p className="mt-2 text-secondary text-[14px]">{description}</p>
+          </div>
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            {tags.map((tag) => (
+              <p key={typeof tag === 'string' ? tag : tag.name} className={`text-[14px] ${typeof tag === 'string' ? 'text-indigo-300' : tag.color}`}>
+                #{typeof tag === 'string' ? tag : tag.name}
+              </p>
+            ))}
+          </div>
+        </Link>
+      </Tilt>
+    </motion.div>
+  );
+};
 
 const Projects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [timestamp, setTimestamp] = useState(Date.now()); // Used for cache busting
-
-  // Function to force refresh data
-  const refreshData = () => {
-    setTimestamp(Date.now());
-    setIsLoading(true);
-  };
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        console.log(`[${new Date().toISOString()}] Fetching projects from Firebase... Timestamp: ${timestamp}`);
-        setIsLoading(true);
-        
-        // Clear any local caches
-        if (typeof window !== 'undefined') {
-          try {
-            sessionStorage.clear();
-            localStorage.removeItem('portfolio-projects');
-            console.log("Cleared browser storage to prevent stale data");
-          } catch (e) {
-            console.warn("Could not clear storage", e);
-          }
-        }
-        
-        const firebaseProjects = await getProjects();
-        console.log(`[${new Date().toISOString()}] Firebase projects data:`, 
-          firebaseProjects ? `${firebaseProjects.length} projects retrieved` : "No projects found");
-        
-        if (firebaseProjects && Array.isArray(firebaseProjects) && firebaseProjects.length > 0) {
-          // Convert from the format used in ProjectEditor to the format used here
-          const formattedProjects = firebaseProjects.map((project: any) => {
-            console.log(`Processing project: ${project.name || project.title || "Untitled"}`);
-            return {
-              title: project.name || project.title || "Untitled Project",
-              description: project.description || "No description provided",
-              tags: Array.isArray(project.tags) 
-                ? project.tags.map((tag: any) => typeof tag === 'string' ? tag : (tag.name || "")) 
-                : [],
-              image: project.image || "/project1.png",
-              githubLink: project.source_code_link || project.githubLink || "#",
-              demoLink: project.live_demo_link || project.demoLink || "#"
-            };
-          });
-          console.log(`[${new Date().toISOString()}] Formatted projects for display:`, 
-            formattedProjects.map(p => p.title).join(", "));
-          setProjects(formattedProjects);
-        } else {
-          console.log(`[${new Date().toISOString()}] No projects found in Firebase, using fallback`);
-          setProjects(fallbackProjects);
-        }
+        const projectsData = await getProjects();
+        setProjects(projectsData as Project[]);
       } catch (error) {
-        console.error(`[${new Date().toISOString()}] Error fetching projects from Firebase:`, error);
-        console.log(`[${new Date().toISOString()}] Using fallback example project due to error`);
-        setProjects(fallbackProjects);
+        console.error("Error fetching projects:", error);
       } finally {
-        setIsLoading(false);
+        // Simple loading simulation
+        setTimeout(() => {
+          setLoading(false);
+        }, 500);
       }
     };
-    
+
     fetchProjects();
-    
-    // Set up an interval to refresh data every minute if the component is visible
-    const refreshInterval = setInterval(() => {
-      if (document.visibilityState === 'visible') {
-        console.log(`[${new Date().toISOString()}] Auto-refreshing projects data`);
-        refreshData();
-      }
-    }, 60000); // 1 minute
-    
-    // Clear interval on component unmount
-    return () => clearInterval(refreshInterval);
-  }, [timestamp]); // Re-run when timestamp changes
+  }, []);
 
   return (
-    <section id="projects" className="min-h-screen py-20 bg-primary">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-16"
+    <>
+      <motion.div>
+        <p className={styles.sectionSubText}>My work</p>
+        <h2 className={styles.sectionHeadText}>Projects.</h2>
+      </motion.div>
+
+      <div className="w-full flex">
+        <motion.p
+          variants={{
+            hidden: { opacity: 0 },
+            show: { opacity: 1, transition: { duration: 0.5, delay: 0.1 } }
+          }}
+          className="mt-3 text-secondary text-[17px] max-w-3xl leading-[30px]"
         >
-          <h2 className="text-4xl font-bold text-white mb-4">
-            My <span className="text-indigo-500">Projects</span>
-          </h2>
-          <div className="w-20 h-1 bg-indigo-500 mx-auto rounded-full"></div>
-          <button 
-            onClick={refreshData}
-            className="mt-4 text-sm text-indigo-400 hover:text-indigo-300"
-          >
-            Refresh Projects
-          </button>
-        </motion.div>
-
-        {isLoading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-          </div>
-        ) : (
-          <>
-            {projects.length === 0 ? (
-              <div className="text-center text-white">
-                <p>No projects found. Add some through the admin dashboard!</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {projects.map((project, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 50 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: index * 0.2 }}
-                    className="bg-black-100 rounded-xl overflow-hidden group"
-                  >
-                    {/* Project Image */}
-                    <div className="relative h-48 overflow-hidden">
-                      <img
-                        src={project.image}
-                        alt={project.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4">
-                        <a
-                          href={project.githubLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-2 bg-white rounded-full hover:bg-indigo-500 hover:text-white transition-colors duration-300"
-                        >
-                          <Github size={20} />
-                        </a>
-                        {project.demoLink && project.demoLink !== "#" && (
-                          <a
-                            href={project.demoLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-2 bg-white rounded-full hover:bg-indigo-500 hover:text-white transition-colors duration-300"
-                          >
-                            <ExternalLink size={20} />
-                          </a>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Project Info */}
-                    <div className="p-6">
-                      <h3 className="text-xl font-semibold text-white mb-2">
-                        {project.title}
-                      </h3>
-                      <p className="text-gray-300 mb-4">
-                        {project.description}
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {project.tags.map((tag, tagIndex) => (
-                          <span
-                            key={tagIndex}
-                            className="px-3 py-1 bg-indigo-500/20 text-indigo-400 rounded-full text-sm"
-                          >
-                            {typeof tag === 'string' ? tag : tag.name}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-          </>
-        )}
-
-        {/* Attribution */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mt-16 text-sm text-gray-400"
-        >
-          <p>Design inspired by <a href="https://github.com/sunnypatell/Portfolio" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:text-indigo-300">Sunny Patel's Portfolio</a></p>
-        </motion.div>
+          The following projects showcase my skills and experience through real-world examples of my work. 
+          Each project is briefly described with links to code repositories and live demos. 
+          They reflect my ability to solve complex problems, work with different technologies, 
+          and manage projects effectively.
+        </motion.p>
       </div>
-    </section>
+
+      {loading ? (
+        <div className="flex justify-center items-center mt-20">
+          <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      ) : (
+        <div className="mt-20 flex flex-wrap gap-7">
+          {projects.map((project, index) => (
+            <ProjectCard key={`project-${index}`} index={index} {...project} />
+          ))}
+        </div>
+      )}
+    </>
   );
 };
 
-export default Projects;
+export default SectionWrapper(Projects, "projects");

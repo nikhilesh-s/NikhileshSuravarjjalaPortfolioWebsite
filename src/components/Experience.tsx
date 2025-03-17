@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { VerticalTimeline, VerticalTimelineElement } from "react-vertical-timeline-component";
 import "react-vertical-timeline-component/style.min.css";
-import { experiences as defaultExperiences } from "../constants";
 import { Experience as ExperienceType } from "../types";
 import { motion } from "framer-motion";
 import { styles } from "../styles";
@@ -59,33 +58,17 @@ const Experience = () => {
   const animations = titleContentSlideIn();
 
   useEffect(() => {
-    // Fetch experiences from Firebase with localStorage fallback
+    // Fetch experiences using hardcoded data
     const fetchExperiences = async () => {
       try {
         setIsLoading(true);
-        // Try to get experiences from Firebase
-        const firebaseExperiences = await getExperiences();
-        
-        if (firebaseExperiences && firebaseExperiences.length > 0) {
-          setExperiences(firebaseExperiences);
-        } else {
-          // Fallback to localStorage if Firebase doesn't have data
-          const savedExperiences = localStorage.getItem('portfolio-experiences');
-          if (savedExperiences) {
-            setExperiences(JSON.parse(savedExperiences));
-          } else {
-            setExperiences(defaultExperiences);
-          }
+        // Get hardcoded experiences data from dataService
+        const experienceData = await getExperiences();
+        if (experienceData && experienceData.length > 0) {
+          setExperiences(experienceData);
         }
       } catch (error) {
         console.error("Error fetching experiences:", error);
-        // If Firebase fails, try localStorage
-        const savedExperiences = localStorage.getItem('portfolio-experiences');
-        if (savedExperiences) {
-          setExperiences(JSON.parse(savedExperiences));
-        } else {
-          setExperiences(defaultExperiences);
-        }
       } finally {
         setIsLoading(false);
       }
@@ -102,29 +85,26 @@ const Experience = () => {
         viewport={{ once: true }}
         variants={animations.title}
       >
-        <p className={styles.sectionSubText}>
-          What I have done so far
-        </p>
-        <h2 className={styles.sectionHeadText}>Work Experience.</h2>
+        <p className={styles.sectionSubText}>My professional journey</p>
+        <h2 className={styles.sectionHeadText}>Experience.</h2>
       </motion.div>
 
-      <motion.div 
-        className="mt-20 flex flex-col"
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true }}
-        variants={animations.content}
-      >
+      <div className="mt-20 flex flex-col">
         {isLoading ? (
-          <p className="text-white">Loading experiences...</p>
+          <div className="flex justify-center my-8">
+            <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+          </div>
         ) : (
           <VerticalTimeline>
             {experiences.map((experience, index) => (
-              <ExperienceCard key={index} experience={experience} />
+              <ExperienceCard
+                key={`experience-${index}`}
+                experience={experience}
+              />
             ))}
           </VerticalTimeline>
         )}
-      </motion.div>
+      </div>
     </div>
   );
 };

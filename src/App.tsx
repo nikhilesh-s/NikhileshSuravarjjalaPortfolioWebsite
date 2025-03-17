@@ -15,6 +15,7 @@ import CertificationsEditor from './admin/CertificationsEditor';
 import TechnologiesEditor from './admin/TechnologiesEditor';
 import ResumeSimple from './pages/ResumeSimple';
 import Journey from './pages/Journey';
+import ProjectDetail from './pages/ProjectDetail';
 import AdminAuth from './admin/AdminAuth';
 import ProtectedRoute from './utils/ProtectedRoute';
 import SetupAdmin from './admin/SetupAdmin';
@@ -63,6 +64,7 @@ const App = () => {
           <Route path="/" element={<MainContent />} />
           <Route path="/resume" element={<PageLayout><ResumeSimple /></PageLayout>} />
           <Route path="/journey" element={<PageLayout><Journey /></PageLayout>} />
+          <Route path="/project/:id" element={<ProjectDetail />} />
           <Route path="/firebase-test" element={<FirebaseTest />} />
           
           {/* Admin routes */}

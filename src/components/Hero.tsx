@@ -134,12 +134,12 @@ const Hero = () => {
           className="w-full md:w-1/2 mt-12 md:mt-0 flex justify-center"
         >
           <div className="relative">
-            <div className="absolute -inset-0.5 bg-indigo-600 rounded-full blur-lg opacity-75 animate-pulse"></div>
+            <div className="absolute -inset-0.5 bg-indigo-600 rounded-full blur-md opacity-50 animate-pulse"></div>
             <img 
               src={heroData?.image || "/hero-image.png"} 
               alt="hero" 
               className="max-w-full h-auto rounded-full border-4 border-indigo-500 z-10 relative"
-              style={{ width: '400px', height: '400px', objectFit: 'cover' }}
+              style={{ width: '320px', height: '320px', objectFit: 'cover' }}
             />
           </div>
         </motion.div>

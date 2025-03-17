@@ -29,16 +29,31 @@ export interface Testimonial {
   designation: string;
   company: string;
   image: string;
+  skillCategories?: Array<{
+    title: string;
+    skills: string[];
+  }>;
 }
 
 export interface Project {
+  id: string;
   name: string;
   description: string;
-  tags: {
-    name: string;
-    color: string;
-  }[];
+  longDescription?: string;
+  challenge?: string;
+  role?: string;
+  year?: string;
+  timeline?: string;
+  tools?: string;
+  tags: Array<string | { name: string; color: string }>;
   image: string;
+  images?: string[];
   source_code_link: string;
   live_demo_link?: string;
+  features?: string[];
+  resources?: {
+    name: string;
+    url: string;
+  }[];
+  goal?: string;
 }

@@ -1,7 +1,12 @@
+// NOTE: This file is kept for reference but is no longer in use
+// The website now uses hardcoded data instead of Firebase
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Save, Plus, X, Edit, Trash2 } from 'lucide-react';
-import { getResume, saveResume } from '../services/dataService';
+// Comment out Firebase imports as we've moved to hardcoded data
+// These were previously imported from "../services/dataService"
+// import { getResume, saveResume } from "../services/dataService";
 
 interface ResumeData {
   resumeLink: string;
@@ -33,73 +38,20 @@ const ResumeEditor: React.FC = () => {
   const [saveMessage, setSaveMessage] = useState({ show: false, text: '' });
   const [isLoading, setIsLoading] = useState(true);
   
-  // Load resume data from Firebase on component mount
   useEffect(() => {
-    const loadResumeData = async () => {
-      try {
-        setIsLoading(true);
-        const firebaseResume = await getResume();
-        
-        if (firebaseResume) {
-          setResumeData(firebaseResume);
-        } else {
-          // Fallback to localStorage
-          const savedResumeData = localStorage.getItem('portfolio-resume');
-          if (savedResumeData) {
-            setResumeData(JSON.parse(savedResumeData));
-          }
-        }
-      } catch (err) {
-        console.error("Error loading resume data:", err);
-        // Fallback to localStorage
-        const savedResumeData = localStorage.getItem('portfolio-resume');
-        if (savedResumeData) {
-          setResumeData(JSON.parse(savedResumeData));
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    loadResumeData();
+    // This component is no longer in use
+    // Data is now hardcoded in dataService.ts
+    setIsLoading(false);
+    setSaveMessage({ show: true, text: 'ADMIN FUNCTIONALITY DISABLED - Using hardcoded data instead' });
   }, []);
-  
-  // Save resume data to Firebase whenever it changes
-  const saveResumeData = async () => {
-    try {
-      setIsLoading(true);
-      const success = await saveResume(resumeData);
-      
-      if (success) {
-        // Also save to localStorage as fallback
-        localStorage.setItem('portfolio-resume', JSON.stringify(resumeData));
-        showSaveMessage("Changes saved successfully");
-      } else {
-        showSaveMessage("Error saving to Firebase, saved to localStorage as backup");
-        localStorage.setItem('portfolio-resume', JSON.stringify(resumeData));
-      }
-    } catch (err) {
-      console.error("Error saving resume data:", err);
-      showSaveMessage("Error saving to Firebase, saved to localStorage as backup");
-      localStorage.setItem('portfolio-resume', JSON.stringify(resumeData));
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-  const showSaveMessage = (text: string) => {
-    setSaveMessage({ show: true, text });
-    setTimeout(() => {
-      setSaveMessage({ show: false, text: '' });
-    }, 3000);
-  };
-  
+
   const handleResumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setResumeData({
       ...resumeData,
       resumeLink: e.target.value
     });
-    saveResumeData();
+    // Original functionality (now disabled):
+    // saveResumeData();
   };
   
   const handleAddSkill = (e: React.FormEvent) => {
@@ -111,7 +63,8 @@ const ResumeEditor: React.FC = () => {
       skills: [...resumeData.skills, newSkill]
     });
     setNewSkill('');
-    saveResumeData();
+    // Original functionality (now disabled):
+    // saveResumeData();
   };
   
   const handleRemoveSkill = (skillToRemove: string) => {
@@ -119,7 +72,8 @@ const ResumeEditor: React.FC = () => {
       ...resumeData,
       skills: resumeData.skills.filter(skill => skill !== skillToRemove)
     });
-    saveResumeData();
+    // Original functionality (now disabled):
+    // saveResumeData();
   };
   
   const handleAddCertification = () => {
@@ -147,7 +101,8 @@ const ResumeEditor: React.FC = () => {
         ...resumeData,
         certifications: updatedCertifications
       });
-      saveResumeData();
+      // Original functionality (now disabled):
+      // saveResumeData();
     }
   };
   
@@ -185,7 +140,8 @@ const ResumeEditor: React.FC = () => {
     setCurrentCertification(null);
     setIsEditingCert(false);
     setEditingCertIndex(null);
-    saveResumeData();
+    // Original functionality (now disabled):
+    // saveResumeData();
   };
   
   const handleCancelCertification = () => {
@@ -228,6 +184,7 @@ const ResumeEditor: React.FC = () => {
                   onChange={handleResumeChange}
                   className="w-full bg-gray-800 p-3 rounded-lg text-white"
                   placeholder="https://example.com/your-resume.pdf"
+                  disabled={true}
                 />
               </div>
             </div>
@@ -243,10 +200,12 @@ const ResumeEditor: React.FC = () => {
                   onChange={(e) => setNewSkill(e.target.value)}
                   className="flex-grow bg-gray-800 p-3 rounded-lg text-white"
                   placeholder="Add a new skill"
+                  disabled={true}
                 />
                 <button
                   type="submit"
                   className="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+                  disabled={true}
                 >
                   <Plus size={16} />
                   Add
@@ -260,6 +219,7 @@ const ResumeEditor: React.FC = () => {
                     <button
                       onClick={() => handleRemoveSkill(skill)}
                       className="text-red-400 hover:text-red-300"
+                      disabled={true}
                     >
                       <X size={14} />
                     </button>
@@ -281,6 +241,7 @@ const ResumeEditor: React.FC = () => {
                   <button
                     onClick={handleAddCertification}
                     className="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+                    disabled={true}
                   >
                     <Plus size={16} />
                     Add Certification
@@ -308,6 +269,7 @@ const ResumeEditor: React.FC = () => {
                           className="w-full bg-gray-700 p-3 rounded-lg text-white"
                           placeholder="AWS Certified Developer"
                           required
+                          disabled={true}
                         />
                       </div>
                       
@@ -323,6 +285,7 @@ const ResumeEditor: React.FC = () => {
                           className="w-full bg-gray-700 p-3 rounded-lg text-white"
                           placeholder="Amazon Web Services"
                           required
+                          disabled={true}
                         />
                       </div>
                       
@@ -338,6 +301,7 @@ const ResumeEditor: React.FC = () => {
                           className="w-full bg-gray-700 p-3 rounded-lg text-white"
                           placeholder="Jan 2023"
                           required
+                          disabled={true}
                         />
                       </div>
                       
@@ -352,6 +316,7 @@ const ResumeEditor: React.FC = () => {
                           onChange={handleCertificationChange}
                           className="w-full bg-gray-700 p-3 rounded-lg text-white"
                           placeholder="https://example.com/certification"
+                          disabled={true}
                         />
                       </div>
                     </div>
@@ -361,12 +326,14 @@ const ResumeEditor: React.FC = () => {
                         type="button"
                         onClick={handleCancelCertification}
                         className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg"
+                        disabled={true}
                       >
                         Cancel
                       </button>
                       <button
                         type="submit"
                         className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+                        disabled={true}
                       >
                         <Save size={16} />
                         Save Certification
@@ -405,12 +372,14 @@ const ResumeEditor: React.FC = () => {
                               <button
                                 onClick={() => handleEditCertification(index)}
                                 className="text-indigo-400 hover:text-indigo-300"
+                                disabled={true}
                               >
                                 <Edit size={16} />
                               </button>
                               <button
                                 onClick={() => handleRemoveCertification(index)}
                                 className="text-red-400 hover:text-red-300"
+                                disabled={true}
                               >
                                 <Trash2 size={16} />
                               </button>
