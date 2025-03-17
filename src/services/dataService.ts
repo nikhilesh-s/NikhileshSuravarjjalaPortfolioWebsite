@@ -198,64 +198,78 @@ const projects = [
 ];
 
 // Journey milestones data for the Career Exploration page
-const journeyMilestones = [
-  {
-    id: "early-exposure",
-    year: "2014-2015",
-    title: "Early Exposure to Robotics & Coding",
-    description: "Started my journey into the world of programming with simple HTML websites and basic JavaScript games. This early exposure sparked my passion for technology and problem-solving.",
-    image: "/company/meta.png"
-  },
-  {
-    id: "fll",
-    year: "2016-2021",
-    title: "Developing Skills Through FIRST LEGO League (FLL)",
-    description: "Over the next five years, I was an active member of an FLL team, where I fell in love with robotics, programming, and teamwork.",
-    image: "/company/shopify.png"
-  },
-  {
-    id: "public-speaking",
-    year: "2018-Present",
-    title: "Public Speaking & Leadership with Gallant Gaveliers Gavel Club",
-    description: "Since 2018, I have been an active member of the Gallant Gaveliers Gavel Club, consistently honing my public speaking and leadership skills.",
-    image: "/company/shopify.png"
-  },
-  {
-    id: "vex-robotics",
-    year: "2020-Present",
-    title: "VEX Robotics with Gael Force Robotics 5327",
-    description: "Transitioning to VEX Robotics in 2020, I continued to refine my technical skills while also taking on leadership roles within my team.",
-    image: "/company/tesla.png"
-  },
-  {
-    id: "tennis",
-    year: "2023-Present",
-    title: "Varsity Tennis at DHS",
-    description: "Competing at the varsity level has taught me the importance of resilience, discipline, and teamwork.",
-    image: "/company/starbucks.png"
-  },
-  {
-    id: "engineering-courses",
-    year: "2023-2025",
-    title: "Engineering Courses at Dublin High School",
-    description: "Taking Introduction to Engineering Design (IED) and Honors Principles of Engineering (POE) has deepened my understanding of engineering principles.",
-    image: "/company/meta.png"
-  },
-  {
-    id: "tvt",
-    year: "2024-Present",
-    title: "Leading Tri Valley Tech (TVT)",
-    description: "As CEO of TVT, I lead initiatives to provide web development services, mentorship programs, and career-building opportunities for students.",
-    image: "/company/shopify.png"
-  },
-  {
-    id: "vp-class",
-    year: "2024-2025",
-    title: "Vice President of DHS Class of 2027",
-    description: "As VP, I have been heavily involved in organizing major school events, fundraising, and representing my class.",
-    image: "/company/meta.png"
-  }
-];
+export const getJourneyMilestones = async () => {
+  // Simulating an API call with a delay
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve([
+        {
+          id: "early-exposure",
+          year: "2014-2015",
+          title: "Early Exposure to Robotics & Coding",
+          description: "In 2014, I participated in Junior FIRST LEGO League (Jr. FLL), where I used block-based coding to program LEGO robots. This was my first introduction to technology, and it sparked my curiosity about automation and problem-solving.",
+          image: ""
+        },
+        {
+          id: "fll",
+          year: "2016-2021",
+          title: "FIRST LEGO League (FLL) & Developing a Passion for Robotics",
+          description: "From 2016 to 2021, I participated in FIRST LEGO League (FLL), where I developed a deep passion for robotics and programming. FLL was an opportunity to design, build, and program robots while collaborating with a team to solve real-world challenges.",
+          image: ""
+        },
+        {
+          id: "public-speaking",
+          year: "2018-Present",
+          title: "Leadership & Public Speaking with Gallant Gaveliers Gavel Club",
+          description: "Since 2018, I have been an active member of Gallant Gaveliers Gavel Club, where I have continuously refined my public speaking and leadership skills. Through regular speeches, impromptu speaking exercises, and competitions, I have developed confidence in articulating ideas clearly and persuasively.",
+          image: ""
+        },
+        {
+          id: "vex-robotics",
+          year: "2020-Present",
+          title: "VEX Robotics with Gael Force Robotics 5327",
+          description: "In 2020, I transitioned from FLL to VEX Robotics, joining Gael Force Robotics 5327. VEX provided me with more advanced engineering challenges, requiring strategic thinking, coding expertise, and collaboration.",
+          image: ""
+        },
+        {
+          id: "debate",
+          year: "2021-Present",
+          title: "Competitive Public Speaking with DHS Speech & Debate",
+          description: "As a member of DHS Speech & Debate, I have competed in various tournaments, further enhancing my ability to think critically and communicate effectively.",
+          image: ""
+        },
+        {
+          id: "tennis",
+          year: "2023-Present",
+          title: "Varsity Tennis at Dublin High School",
+          description: "In addition to my academic and leadership pursuits, I have been a Varsity Tennis player at DHS since 2023. Competing at this level has taught me the importance of discipline, perseverance, and teamwork.",
+          image: ""
+        },
+        {
+          id: "engineering-courses",
+          year: "2023-2025",
+          title: "Engineering Courses at Dublin High School",
+          description: "As a freshman in the 2023-24 school year, I enrolled in Introduction to Engineering Design (IED) at Dublin High School. Now, as a sophomore (2024-25), I am taking Honors Principles of Engineering (POE).",
+          image: ""
+        },
+        {
+          id: "tvt",
+          year: "2024-Present",
+          title: "Leading Tri Valley Tech (TVT) as CEO",
+          description: "In late 2024, I joined Tri Valley Tech (TVT), a nonprofit organization focused on making technology education and resources more accessible. After contributing to various initiatives, I became the CEO.",
+          image: ""
+        },
+        {
+          id: "vp-class",
+          year: "2024-2025",
+          title: "Vice President of DHS Class of 2027",
+          description: "As the Vice President of the DHS Class of 2027, I have been responsible for organizing school events, fundraising, and representing my class.",
+          image: ""
+        }
+      ]);
+    }, 500);
+  });
+};
 
 // Experiences hardcoded data
 const experiences = [
@@ -346,6 +360,20 @@ const feedbacks = [
     designation: "CFO",
     company: "Acme Co",
     image: "https://randomuser.me/api/portraits/women/4.jpg",
+    skillCategories: [
+      {
+        title: "Frontend",
+        skills: ["HTML", "CSS", "JavaScript", "React", "Tailwind CSS", "Three.js"]
+      },
+      {
+        title: "Backend",
+        skills: ["Node.js", "Express", "Firebase", "MongoDB"]
+      },
+      {
+        title: "Tools",
+        skills: ["Git", "VS Code", "Figma", "Adobe XD"]
+      }
+    ]
   },
   {
     testimonial: "I've never met a web developer who truly cares about their clients' success like this person does.",
@@ -362,9 +390,6 @@ const feedbacks = [
     image: "https://randomuser.me/api/portraits/women/6.jpg",
   },
 ];
-
-// Get journey milestones
-export const getJourneyMilestones = () => journeyMilestones;
 
 // Functions to return hardcoded data
 export const getTechnologies = async () => {
