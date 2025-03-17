@@ -65,7 +65,7 @@ const technologies = [
 const projects = [
   {
     id: "portfolio",
-    name: "3D Portfolio Website",
+    name: "Portfolio Website",
     description: "A modern, interactive portfolio website built with React, Three.js, and Tailwind CSS, featuring 3D models, animations, and a responsive design to showcase my projects and skills.",
     longDescription: "This portfolio website represents a significant milestone in my web development journey. It combines cutting-edge technologies like React, Three.js, and Framer Motion to create an immersive, interactive experience that truly represents my skills and personality. The site features 3D models, smooth animations, and a fully responsive design that adapts to any device size. I built this project to showcase my technical abilities and create a memorable platform for potential employers and clients to explore my work.",
     challenge: "The main challenges included optimizing 3D model performance across devices, implementing smooth transitions and animations without affecting load times, and creating a cohesive design that balances visual appeal with usability. I also had to ensure the site remained accessible despite its heavy reliance on advanced visual elements.",
@@ -197,6 +197,66 @@ const projects = [
   }
 ];
 
+// Journey milestones data for the Career Exploration page
+const journeyMilestones = [
+  {
+    id: "early-exposure",
+    year: "2014-2015",
+    title: "Early Exposure to Robotics & Coding",
+    description: "Started my journey into the world of programming with simple HTML websites and basic JavaScript games. This early exposure sparked my passion for technology and problem-solving.",
+    image: "/company/meta.png"
+  },
+  {
+    id: "fll",
+    year: "2016-2021",
+    title: "Developing Skills Through FIRST LEGO League (FLL)",
+    description: "Over the next five years, I was an active member of an FLL team, where I fell in love with robotics, programming, and teamwork.",
+    image: "/company/shopify.png"
+  },
+  {
+    id: "public-speaking",
+    year: "2018-Present",
+    title: "Public Speaking & Leadership with Gallant Gaveliers Gavel Club",
+    description: "Since 2018, I have been an active member of the Gallant Gaveliers Gavel Club, consistently honing my public speaking and leadership skills.",
+    image: "/company/shopify.png"
+  },
+  {
+    id: "vex-robotics",
+    year: "2020-Present",
+    title: "VEX Robotics with Gael Force Robotics 5327",
+    description: "Transitioning to VEX Robotics in 2020, I continued to refine my technical skills while also taking on leadership roles within my team.",
+    image: "/company/tesla.png"
+  },
+  {
+    id: "tennis",
+    year: "2023-Present",
+    title: "Varsity Tennis at DHS",
+    description: "Competing at the varsity level has taught me the importance of resilience, discipline, and teamwork.",
+    image: "/company/starbucks.png"
+  },
+  {
+    id: "engineering-courses",
+    year: "2023-2025",
+    title: "Engineering Courses at Dublin High School",
+    description: "Taking Introduction to Engineering Design (IED) and Honors Principles of Engineering (POE) has deepened my understanding of engineering principles.",
+    image: "/company/meta.png"
+  },
+  {
+    id: "tvt",
+    year: "2024-Present",
+    title: "Leading Tri Valley Tech (TVT)",
+    description: "As CEO of TVT, I lead initiatives to provide web development services, mentorship programs, and career-building opportunities for students.",
+    image: "/company/shopify.png"
+  },
+  {
+    id: "vp-class",
+    year: "2024-2025",
+    title: "Vice President of DHS Class of 2027",
+    description: "As VP, I have been heavily involved in organizing major school events, fundraising, and representing my class.",
+    image: "/company/meta.png"
+  }
+];
+
 // Experiences hardcoded data
 const experiences = [
   {
@@ -302,6 +362,9 @@ const feedbacks = [
     image: "https://randomuser.me/api/portraits/women/6.jpg",
   },
 ];
+
+// Get journey milestones
+export const getJourneyMilestones = () => journeyMilestones;
 
 // Functions to return hardcoded data
 export const getTechnologies = async () => {
