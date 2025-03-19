@@ -271,13 +271,6 @@ export const getJourneyMilestones = async () => {
           image: ""
         },
         {
-          id: "tennis",
-          year: "2023-Present",
-          title: "Varsity Tennis at Dublin High School",
-          description: "In addition to my academic and leadership pursuits, I have been a Varsity Tennis player at DHS since 2023. Competing at this level has taught me the importance of discipline, perseverance, and teamwork.",
-          image: ""
-        },
-        {
           id: "engineering-courses",
           year: "2023-2025",
           title: "Engineering Courses at Dublin High School",
@@ -285,10 +278,10 @@ export const getJourneyMilestones = async () => {
           image: ""
         },
         {
-          id: "tvt",
-          year: "2024-Present",
-          title: "Leading Tri Valley Tech (TVT) as CEO",
-          description: "In late 2024, I joined Tri Valley Tech (TVT), a nonprofit organization focused on making technology education and resources more accessible. After contributing to various initiatives, I became the CEO.",
+          id: "tennis",
+          year: "2023-Present",
+          title: "Varsity Tennis at Dublin High School",
+          description: "In addition to my academic and leadership pursuits, I have been a Varsity Tennis player at DHS since 2023. Competing at this level has taught me the importance of discipline, perseverance, and teamwork.",
           image: ""
         },
         {
@@ -296,6 +289,13 @@ export const getJourneyMilestones = async () => {
           year: "2024-2025",
           title: "Vice President of DHS Class of 2027",
           description: "As the Vice President of the DHS Class of 2027, I have been responsible for organizing school events, fundraising, and representing my class.",
+          image: ""
+        },
+        {
+          id: "tvt",
+          year: "2024-Present",
+          title: "Leading Tri Valley Tech (TVT) as CEO",
+          description: "In late 2024, I joined Tri Valley Tech (TVT), a nonprofit organization focused on making technology education and resources more accessible. After contributing to various initiatives, I became the CEO.",
           image: ""
         }
       ]);
@@ -308,9 +308,9 @@ const experiences = [
   {
     title: "Chief Executive Officer",
     company_name: "Tri Valley Tech",
-    icon: "/starbucks.png",
+    icon: "/starbucks.png", // Placeholder - to be replaced with TVT Logo
     iconBg: "#383E56",
-    date: "January 2023 - Present",
+    date: "October 2024 - Present",
     points: [
       "Leading web development consulting services for organizations to establish robust digital platforms.",
       "Developing and maintaining responsive web applications using React, Node.js and modern frameworks.",
@@ -321,7 +321,7 @@ const experiences = [
   {
     title: "VEX Robotics Team Lead",
     company_name: "Dublin High School Robotics",
-    icon: "/tesla.png",
+    icon: "/vex-robotics-logo.png", // Placeholder - to be replaced with VEX Robotics Competition logo
     iconBg: "#E6DEDD",
     date: "August 2023 - Present",
     points: [
@@ -334,9 +334,9 @@ const experiences = [
   {
     title: "Vice President",
     company_name: "Dublin High School Class of 2027",
-    icon: "/meta.png",
+    icon: "/class-27.png", // Placeholder - to be replaced with image of 27
     iconBg: "#E6DEDD",
-    date: "September 2023 - Present",
+    date: "August 2024 - June 2025",
     points: [
       "Organizing community and leadership events through the DubLead program.",
       "Managing class initiatives and representing student interests to faculty and administration.",
@@ -366,9 +366,10 @@ const contact = {
   phone: "925-384-8053",
   location: "Dublin, CA",
   social: {
-    github: "https://github.com/yourusername",
-    linkedin: "https://linkedin.com/in/yourusername",
-    twitter: "https://twitter.com/yourusername"
+    github: "https://github.com/nikhilesh-s",
+    linkedin: "#",
+    instagram: "https://www.instagram.com/nik.suravarjjala?igsh=NTc4MTIwNjQ2YQ%3D%3D&utm_source=qr",
+    twitter: ""
   }
 };
 

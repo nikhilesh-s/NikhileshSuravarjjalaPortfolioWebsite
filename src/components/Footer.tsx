@@ -1,4 +1,4 @@
-import { Github, Linkedin, Mail, Phone, MapPin, ArrowRight } from 'lucide-react';
+import { Github, Linkedin, Mail, Phone, MapPin, ArrowRight, Instagram } from 'lucide-react';
 import { Link as ScrollLink } from 'react-scroll';
 import { Link } from 'react-router-dom';
 import { getContact } from '../services/dataService';
@@ -12,7 +12,8 @@ const Footer = () => {
     social: {
       github: "",
       linkedin: "",
-      twitter: ""
+      twitter: "",
+      instagram: ""
     }
   });
 
@@ -123,6 +124,14 @@ const Footer = () => {
                 className="text-gray-400 hover:text-white transition-colors duration-300"
               >
                 <Linkedin size={20} />
+              </a>
+              <a
+                href={contact.social.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition-colors duration-300"
+              >
+                <Instagram size={20} />
               </a>
             </div>
           </div>
