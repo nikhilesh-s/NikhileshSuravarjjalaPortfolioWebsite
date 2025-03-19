@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { PerformanceProvider } from "./context/PerformanceContext";
-import { About, Contact, Experience, Feedbacks, Hero, Navbar, Tech, Works } from './components';
+import { About, Contact, Experience, Feedbacks, Hero, Navbar, Tech, Works, Footer } from './components';
 import AdminDashboard from './admin/AdminDashboard';
 import ProjectEditor from './admin/ProjectEditor';
 import ExperienceEditor from './admin/ExperienceEditor';
@@ -37,6 +37,7 @@ const MainContent = () => (
       <Contact />
       {/* 3D elements removed for stability */}
     </div>
+    <Footer />
   </div>
 );
 
@@ -44,6 +45,7 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => (
   <div className="relative z-0 bg-primary min-h-screen">
     <Navbar />
     {children}
+    <Footer />
   </div>
 );
 

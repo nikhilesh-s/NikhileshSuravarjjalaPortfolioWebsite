@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { getProjects } from '../services/dataService';
 import { styles } from '../styles';
-import { Navbar } from '../components';
+import { Navbar, Footer } from '../components';
 import { ArrowLeft, Github, ExternalLink } from 'lucide-react';
 
 const ProjectDetail = () => {
@@ -37,6 +37,7 @@ const ProjectDetail = () => {
         <div className="container mx-auto px-4 pt-24">
           <div className="animate-pulse">Loading project details...</div>
         </div>
+        <Footer />
       </div>
     );
   }
@@ -53,6 +54,7 @@ const ProjectDetail = () => {
             Back to Projects
           </Link>
         </div>
+        <Footer />
       </div>
     );
   }
@@ -255,6 +257,7 @@ const ProjectDetail = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

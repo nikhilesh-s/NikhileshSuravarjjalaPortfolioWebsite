@@ -363,8 +363,8 @@ const about = {
 // Contact information
 const contact = {
   email: "niksuravarjjala@gmail.com",
-  phone: "+1 (123) 456-7890",
-  location: "New York, NY",
+  phone: "925-384-8053",
+  location: "Dublin, CA",
   social: {
     github: "https://github.com/yourusername",
     linkedin: "https://linkedin.com/in/yourusername",
