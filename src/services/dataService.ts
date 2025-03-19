@@ -70,8 +70,8 @@ const projects = [
     longDescription: "The Tri Valley Tech website represents a key platform for our nonprofit organization, dedicated to showcasing our services, projects, and mission. The site offers a clean, professional design with intuitive navigation, providing visitors with easy access to information about our tech initiatives, educational programs, and community outreach. It was built with React, Tailwind CSS, and Vite, ensuring a fast, responsive, and visually appealing user experience.",
     challenge: "The primary challenges involved creating a sleek, modern interface while maintaining simplicity and accessibility. We aimed to highlight our services and projects effectively without overwhelming visitors with excessive content. Additionally, optimizing load times and ensuring seamless navigation across devices were key priorities.",
     role: "CEO & Lead Developer: As the CEO of Tri Valley Tech, I collaborated with my co-CEO, Amir, throughout the website development process. I contributed to the design and layout decisions but primarily focused on site maintenance and regular updates. This included adding new project pages, refining content, and ensuring the site remained functional and up to date. Amir played a major role in the core design and technical development.",
-    year: "2023-2024",
-    timeline: "July 2023 – Present (ongoing updates and maintenance)",
+    year: "2024-Ongoing",
+    timeline: "October 2024 – Present (ongoing updates and maintenance)",
     tools: "React, Tailwind CSS, Vite, EmailJS",
     tags: [
       { name: "React", color: "blue-text-gradient" },
