@@ -379,7 +379,7 @@ const hero = {
   title: "Software Developer",
   subtitle: "I develop modern web applications and interactive 3D experiences",
   cta: "View My Work",
-  roles: ["Software Developer", "Full Stack Developer", "Student"],
+  roles: ["Software Developer", "Full Stack Developer", "Student", "Speaker", "Leader"],
   description: "Building the future with clean, elegant code. Currently working on cutting-edge web applications and exploring the frontiers of technology.",
   image: "", 
   resumeLink: "/resume.pdf"
