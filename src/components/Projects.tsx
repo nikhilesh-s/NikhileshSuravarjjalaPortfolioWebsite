@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Github, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import Tilt from 'react-tilt';
+import { Tilt } from 'react-tilt';
 import { getProjects } from '../services/dataService';
 import { styles } from '../styles';
 import { SectionWrapper } from '../utils/wrapper';
@@ -36,7 +36,7 @@ const ProjectCard = ({
             <img 
               src={image} 
               alt={name} 
-              className="w-full h-full object-cover rounded-2xl"
+              className="w-full h-full object-contain rounded-2xl bg-tertiary"
             />
             <div className="absolute inset-0 flex justify-end m-3 card-img_hover">
               {source_code_link && (

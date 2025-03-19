@@ -1,8 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { NavLink } from "react-router-dom";
 import { styles } from "../styles";
-import { ChevronLeft } from "lucide-react";
 import { getJourneyMilestones } from "../services/dataService";
 
 const INITIAL_JOURNEY_DATA = [
@@ -107,15 +105,6 @@ const Journey = () => {
 
   return (
     <section className="min-h-screen relative bg-primary">
-      {/* Back to Home button - improved styling */}
-      <NavLink 
-        to="/" 
-        className="fixed top-20 left-4 z-10 flex items-center text-white bg-tertiary/80 hover:bg-tertiary px-4 py-2 rounded-lg transition-all duration-300 backdrop-blur-sm"
-      >
-        <ChevronLeft className="mr-1" size={18} />
-        Back to Home
-      </NavLink>
-
       <div className="padding-x padding-y max-w-7xl mx-auto relative z-0">
         {/* Header */}
         <motion.div

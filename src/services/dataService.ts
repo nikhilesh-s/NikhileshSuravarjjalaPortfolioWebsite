@@ -288,14 +288,14 @@ export const getJourneyMilestones = async () => {
           year: "2024-2025",
           title: "Vice President of DHS Class of 2027",
           description: "As the Vice President of the DHS Class of 2027, I have been responsible for organizing school events, fundraising, and representing my class.",
-          image: "/CO27 Image.heic"
+          image: "/CO27 Image.png"
         },
         {
           id: "tvt",
           year: "2024-Present",
           title: "Leading Tri Valley Tech (TVT) as CEO",
           description: "In late 2024, I joined Tri Valley Tech (TVT), a nonprofit organization focused on making technology education and resources more accessible. After contributing to various initiatives, I became the CEO.",
-          image: "/TVT logo.svg"
+          image: "/TVT logo.png"
         }
       ]);
     }, 500);
@@ -307,7 +307,7 @@ const experiences = [
   {
     title: "Chief Executive Officer",
     company_name: "Tri Valley Tech",
-    icon: "/TVT logo.svg", // Updated with the TVT Logo
+    icon: "/TVT logo.png", // Updated to use PNG format
     iconBg: "#383E56",
     date: "October 2024 - Present",
     points: [
@@ -333,7 +333,7 @@ const experiences = [
   {
     title: "Vice President",
     company_name: "Dublin High School Class of 2027",
-    icon: "/CO27 Image.heic", // Updated with Class of 2027 image
+    icon: "/CO27 Image.png", // Updated with Class of 2027 image in PNG format
     iconBg: "#E6DEDD",
     date: "August 2024 - June 2025",
     points: [
