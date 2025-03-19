@@ -79,9 +79,9 @@ const projects = [
       { name: "Vite", color: "pink-text-gradient" },
       { name: "EmailJS", color: "orange-text-gradient" }
     ],
-    image: "/jobit.png", // Temporary placeholder, to be updated with actual image
+    image: "/TVT Website Image.png", 
     images: [
-      "/jobit.png" // Temporary placeholder, to be updated with actual image
+      "/TVT Website Image.png" 
     ],
     source_code_link: "",
     live_demo_link: "https://trivalleytech.org",
@@ -112,10 +112,9 @@ const projects = [
       { name: "Tailwind CSS", color: "orange-text-gradient" },
       { name: "Framer Motion", color: "purple-text-gradient" }
     ],
-    // Temporarily kept the existing image paths for the portfolio project until new screenshots are available
-    image: "/carrent.png",
+    image: "/Portfolio Website Image.png", 
     images: [
-      "/carrent.png"
+      "/Portfolio Website Image.png" 
     ],
     source_code_link: "https://github.com/nikhilesh-s/NikhileshSuravarjjalaPortfolioWebsite",
     live_demo_link: "https://nikhileshsuravarjjala.vercel.app/",
@@ -261,7 +260,7 @@ export const getJourneyMilestones = async () => {
           year: "2020-Present",
           title: "VEX Robotics with Gael Force Robotics 5327",
           description: "In 2020, I transitioned from FLL to VEX Robotics, joining Gael Force Robotics 5327. VEX provided me with more advanced engineering challenges, requiring strategic thinking, coding expertise, and collaboration.",
-          image: ""
+          image: "/VRC Image.webp"
         },
         {
           id: "debate",
@@ -296,7 +295,7 @@ export const getJourneyMilestones = async () => {
           year: "2024-Present",
           title: "Leading Tri Valley Tech (TVT) as CEO",
           description: "In late 2024, I joined Tri Valley Tech (TVT), a nonprofit organization focused on making technology education and resources more accessible. After contributing to various initiatives, I became the CEO.",
-          image: ""
+          image: "/TVT logo.svg"
         }
       ]);
     }, 500);
@@ -308,7 +307,7 @@ const experiences = [
   {
     title: "Chief Executive Officer",
     company_name: "Tri Valley Tech",
-    icon: "/starbucks.png", // Placeholder - to be replaced with TVT Logo
+    icon: "/TVT logo.svg", // Updated with the TVT Logo
     iconBg: "#383E56",
     date: "October 2024 - Present",
     points: [
@@ -320,8 +319,8 @@ const experiences = [
   },
   {
     title: "VEX Robotics Team Lead",
-    company_name: "Dublin High School Robotics",
-    icon: "/vex-robotics-logo.png", // Placeholder - to be replaced with VEX Robotics Competition logo
+    company_name: "Gael Force Robotics 5327",
+    icon: "/VRC Image.webp", // Updated with the VRC Image
     iconBg: "#E6DEDD",
     date: "August 2023 - Present",
     points: [
