@@ -288,7 +288,7 @@ export const getJourneyMilestones = async () => {
           year: "2024-2025",
           title: "Vice President of DHS Class of 2027",
           description: "As the Vice President of the DHS Class of 2027, I have been responsible for organizing school events, fundraising, and representing my class.",
-          image: ""
+          image: "/CO27 Image.heic"
         },
         {
           id: "tvt",
@@ -333,7 +333,7 @@ const experiences = [
   {
     title: "Vice President",
     company_name: "Dublin High School Class of 2027",
-    icon: "/class-27.png", // Placeholder - to be replaced with image of 27
+    icon: "/CO27 Image.heic", // Updated with Class of 2027 image
     iconBg: "#E6DEDD",
     date: "August 2024 - June 2025",
     points: [
