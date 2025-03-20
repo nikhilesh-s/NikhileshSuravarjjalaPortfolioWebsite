@@ -116,9 +116,7 @@ const Hero = () => {
               Contact Me
             </a>
             <a 
-              href="/Nikhilesh_Suravarjjala_Resume.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/resume"
               className="px-6 py-3 border border-white text-white hover:bg-white hover:text-indigo-900 font-medium rounded-lg transition-colors duration-300"
             >
               Resume

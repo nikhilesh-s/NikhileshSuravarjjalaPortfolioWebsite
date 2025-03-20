@@ -84,14 +84,12 @@ const Footer = () => {
             >
               My Journey
             </Link>
-            <a
-              href="/Nikhilesh_Suravarjjala_Resume.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              to="/resume"
               className="text-gray-300 hover:text-white transition-colors duration-300 cursor-pointer"
             >
               Resume
-            </a>
+            </Link>
           </div>
 
           {/* Contact CTA */}
