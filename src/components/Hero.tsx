@@ -106,7 +106,7 @@ const Hero = () => {
             <span className="text-indigo-500 text-4xl font-semibold animate-blink">|</span>
           </div>
           <p className="text-gray-300 mt-6 text-lg max-w-lg mx-auto md:mx-0">
-            {heroData?.description || 'Building the future with clean, elegant code. Currently working on cutting-edge web applications and exploring the frontiers of technology.'}
+            {heroData?.description || 'Building the future with clean, elegant code. I\'m Nikhilesh Suravarjjala (also known as Nik Suravarjjala or Nik Suravar), a student developer passionate about creating innovative web applications and exploring the frontiers of technology.'}
           </p>
           <div className="mt-10 flex flex-wrap justify-center md:justify-start gap-4">
             <a 
@@ -116,8 +116,8 @@ const Hero = () => {
               Contact Me
             </a>
             <a 
-              href={heroData?.resumeLink || '#'}
-              target="_blank" 
+              href="/Nikhilesh_Suravarjjala_Resume.pdf"
+              target="_blank"
               rel="noopener noreferrer"
               className="px-6 py-3 border border-white text-white hover:bg-white hover:text-indigo-900 font-medium rounded-lg transition-colors duration-300"
             >

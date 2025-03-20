@@ -2,6 +2,7 @@ export interface NavLink {
   id: string;
   title: string;
   isPage?: boolean;
+  externalLink?: string;
 }
 
 export interface Service {

@@ -347,9 +347,9 @@ const experiences = [
 
 // About hardcoded data
 const about = {
-  title: "Nikhilesh Suravarjjala",
+  title: "About Nikhilesh Suravarjjala (Nik Suravarjjala, Nik Suravar)",
   description: [
-    "Success in the modern world is driven by technology, innovation, and leadership, and I am committed to making a meaningful impact in these fields. My goal is to pursue a career in computer science and engineering, specializing in software development, web development, and problem-solving applications. I plan to achieve this by continuing to refine my technical expertise through hands-on projects, leadership experiences, and community-driven initiatives. Engineering and software development fascinate me because they provide the opportunity to design solutions that improve efficiency, solve complex challenges, and make a lasting difference. With a passion for technology consulting and strategic problem-solving, I strive to create innovative digital solutions that enhance organizations and businesses.",
+    "Success in the modern world is driven by technology, innovation, and leadership, and I, Nikhilesh Suravarjjala (also known as Nik Suravarjjala or Nik Suravar), am committed to making a meaningful impact in these fields. My goal is to pursue a career in computer science and engineering, specializing in software development, web development, and problem-solving applications. I plan to achieve this by continuing to refine my technical expertise through hands-on projects, leadership experiences, and community-driven initiatives. Engineering and software development fascinate me because they provide the opportunity to design solutions that improve efficiency, solve complex challenges, and make a lasting difference. With a passion for technology consulting and strategic problem-solving, I strive to create innovative digital solutions that enhance organizations and businesses.",
     
     "As the Chief Executive Officer of Tri Valley Tech, I lead web development consulting projects to help organizations build strong digital platforms while improving my technical and leadership skills. I actively apply my expertise in software engineering, web development, and user experience design to create functional and impactful websites. In addition, I have gained extensive experience in engineering and problem-solving through my participation in the VEX Robotics Competition, where I design, build, and program competitive robots. My leadership extends beyond technology, as I serve as the Vice President for the Dublin High School Class of 2027 through the DubLead program, where I help organize community and leadership events. I also compete at the national level in Dublin High School Speech and Debate, where I hold the position of Treasurer and have developed strong public speaking, analytical, and persuasive communication skills. Additionally, I serve as the President of the Gallant Gaveliers Gavel Club, where I have earned district and state-level awards for public speaking.",
     
@@ -379,9 +379,9 @@ const hero = {
   subtitle: "I develop modern web applications and interactive 3D experiences",
   cta: "View My Work",
   roles: ["Software Developer", "Full Stack Developer", "Student", "Speaker", "Leader"],
-  description: "Building the future with clean, elegant code. Currently working on cutting-edge web applications and exploring the frontiers of technology.",
+  description: "Building the future with clean, elegant code. I'm Nikhilesh Suravarjjala (also known as Nik Suravarjjala or Nik Suravar), a student developer passionate about creating innovative web applications and exploring the frontiers of technology.",
   image: "", 
-  resumeLink: "/resume.pdf"
+  resumeLink: "/Nikhilesh_Suravarjjala_Resume.pdf"
 };
 
 // Feedbacks data

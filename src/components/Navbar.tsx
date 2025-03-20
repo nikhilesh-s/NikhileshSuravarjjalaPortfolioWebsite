@@ -32,7 +32,7 @@ const navLinks: NavLink[] = [
   {
     id: "resume",
     title: "Resume",
-    isPage: true
+    externalLink: "/Nikhilesh_Suravarjjala_Resume.pdf"
   }
 ];
 
@@ -77,11 +77,13 @@ const Navbar = () => {
     };
   }, [navigate, hovering]);
 
-  const handleNavClick = (id: string, isPage?: boolean) => {
+  const handleNavClick = (id: string, isPage?: boolean, externalLink?: string) => {
     setActive(id);
     setToggle(false);
     
-    if (isPage) {
+    if (externalLink) {
+      window.open(externalLink, '_blank');
+    } else if (isPage) {
       navigate(`/${id}`);
     } else if (location.pathname !== '/') {
       navigate('/');
@@ -129,7 +131,7 @@ const Navbar = () => {
               className={`${
                 active === nav.id ? "text-white" : "text-secondary"
               } hover:text-white text-[18px] font-medium cursor-pointer`}
-              onClick={() => handleNavClick(nav.id, nav.isPage)}
+              onClick={() => handleNavClick(nav.id, nav.isPage, nav.externalLink)}
             >
               {nav.title}
             </li>
@@ -156,7 +158,7 @@ const Navbar = () => {
                   className={`font-poppins font-medium cursor-pointer text-[16px] ${
                     active === nav.id ? "text-white" : "text-secondary"
                   }`}
-                  onClick={() => handleNavClick(nav.id, nav.isPage)}
+                  onClick={() => handleNavClick(nav.id, nav.isPage, nav.externalLink)}
                 >
                   {nav.title}
                 </li>
