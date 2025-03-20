@@ -7,7 +7,8 @@ import { Download, ExternalLink } from "lucide-react";
 const Resume = () => {
   const [isFrameLoaded, setIsFrameLoaded] = useState(false);
   const [hasFrameError, setHasFrameError] = useState(false);
-  const resumePath = "/Nikhilesh_Suravarjjala_Resume.pdf";
+  const resumePdfPath = "/Nikhilesh_Suravarjjala_Resume.pdf";
+  const resumeGoogleDocsLink = "https://docs.google.com/document/d/1KW5Jd7CDVGd_OfyRVZenZcLrHPkEODwC/edit?usp=sharing&ouid=117324809776665953812&rtpof=true&sd=true";
 
   useEffect(() => {
     // Set a timeout to detect if the iframe fails to load
@@ -34,29 +35,8 @@ const Resume = () => {
         </motion.div>
 
         <div className="mt-12 flex flex-col items-center">
-          {/* Action buttons */}
-          <div className="mb-8 flex justify-center gap-4 w-full flex-wrap">
-            <a 
-              href={resumePath}
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="bg-tertiary text-white px-6 py-3 rounded-lg flex items-center hover:bg-indigo-600 transition-all"
-            >
-              <ExternalLink className="mr-2" size={20} />
-              View Resume in New Tab
-            </a>
-            <a 
-              href={resumePath}
-              download="Nikhilesh_Suravarjjala_Resume.pdf"
-              className="bg-tertiary text-white px-6 py-3 rounded-lg flex items-center hover:bg-indigo-600 transition-all"
-            >
-              <Download className="mr-2" size={20} />
-              Download Resume
-            </a>
-          </div>
-          
           {/* PDF Viewer */}
-          <div className="w-full h-[800px] rounded-lg overflow-hidden shadow-xl relative">
+          <div className="w-full h-[800px] rounded-lg overflow-hidden shadow-xl relative mb-8">
             {!isFrameLoaded && !hasFrameError && (
               <div className="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-10">
                 <p className="text-white text-lg">Loading Resume...</p>
@@ -69,7 +49,7 @@ const Resume = () => {
                   <p className="text-gray-700 mb-4">Unable to display the PDF viewer.</p>
                   <p className="text-gray-600 mb-6">Your browser might be blocking the PDF viewer or the file might not be accessible.</p>
                   <a 
-                    href={resumePath}
+                    href={resumeGoogleDocsLink}
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="bg-blue-600 text-white px-6 py-3 rounded-lg inline-block hover:bg-blue-700 transition-all"
@@ -80,13 +60,34 @@ const Resume = () => {
               </div>
             ) : (
               <iframe
-                src={`${resumePath}#view=FitH`}
+                src={`${resumePdfPath}#view=FitH`}
                 title="Nikhilesh Suravarjjala Resume"
                 className="w-full h-full"
                 onLoad={() => setIsFrameLoaded(true)}
                 onError={() => setHasFrameError(true)}
               />
             )}
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex justify-center gap-6 w-full flex-wrap mt-4">
+            <a 
+              href={resumeGoogleDocsLink}
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="px-8 py-3 bg-gradient-to-r from-indigo-500 to-blue-600 text-white font-medium rounded-lg hover:shadow-lg transition-all duration-300 flex items-center"
+            >
+              <ExternalLink className="mr-2" size={20} />
+              View Resume in New Tab
+            </a>
+            <a 
+              href={resumePdfPath}
+              download="Nikhilesh_Suravarjjala_Resume.pdf"
+              className="px-8 py-3 bg-gradient-to-r from-indigo-500 to-blue-600 text-white font-medium rounded-lg hover:shadow-lg transition-all duration-300 flex items-center"
+            >
+              <Download className="mr-2" size={20} />
+              Download Resume
+            </a>
           </div>
         </div>
       </div>
