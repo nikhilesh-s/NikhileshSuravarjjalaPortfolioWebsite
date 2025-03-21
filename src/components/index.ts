@@ -8,6 +8,7 @@ import Works from "./Works";
 import Feedbacks from "./Feedbacks";
 import Contact from "./Contact";
 import Footer from "./Footer";
+import SEO from "./SEO";
 
 export {
   Hero,
@@ -20,4 +21,5 @@ export {
   Contact,
   Footer,
   EarthCanvas,
+  SEO,
 };

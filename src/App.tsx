@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { PerformanceProvider } from "./context/PerformanceContext";
-import { About, Contact, Experience, Feedbacks, Hero, Navbar, Tech, Works, Footer } from './components';
+import { About, Contact, Experience, Feedbacks, Hero, Navbar, Tech, Works, Footer, SEO } from './components';
 import AdminDashboard from './admin/AdminDashboard';
 import ProjectEditor from './admin/ProjectEditor';
 import ExperienceEditor from './admin/ExperienceEditor';
@@ -13,7 +13,7 @@ import HeroEditor from './admin/HeroEditor';
 import FeedbacksEditor from './admin/FeedbacksEditor';
 import CertificationsEditor from './admin/CertificationsEditor';
 import TechnologiesEditor from './admin/TechnologiesEditor';
-import ResumeSimple from './pages/ResumeSimple';
+import Resume from './pages/Resume';
 import Journey from './pages/Journey';
 import ProjectDetail from './pages/ProjectDetail';
 import AdminAuth from './admin/AdminAuth';
@@ -62,9 +62,10 @@ const App = () => {
   return (
     <PerformanceProvider>
       <BrowserRouter>
+        <SEO />
         <Routes>
           <Route path="/" element={<MainContent />} />
-          <Route path="/resume" element={<PageLayout><ResumeSimple /></PageLayout>} />
+          <Route path="/resume" element={<PageLayout><Resume /></PageLayout>} />
           <Route path="/journey" element={<PageLayout><Journey /></PageLayout>} />
           <Route path="/project/:id" element={<ProjectDetail />} />
           <Route path="/firebase-test" element={<FirebaseTest />} />

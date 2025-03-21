@@ -7,6 +7,7 @@ import { Download, ExternalLink } from "lucide-react";
 const Resume = () => {
   const [isFrameLoaded, setIsFrameLoaded] = useState(false);
   const [hasFrameError, setHasFrameError] = useState(false);
+  const [useGoogleDocs, setUseGoogleDocs] = useState(false);
   const resumePdfPath = "/Nikhilesh_Suravarjjala_Resume.pdf";
   const resumeGoogleDocsLink = "https://docs.google.com/document/d/1KW5Jd7CDVGd_OfyRVZenZcLrHPkEODwC/edit?usp=sharing&ouid=117324809776665953812&rtpof=true&sd=true";
   
@@ -20,22 +21,34 @@ const Resume = () => {
     // Set a timeout to detect if the iframe fails to load
     const timer = setTimeout(() => {
       if (!isFrameLoaded) {
-        setHasFrameError(true);
+        // If we haven't tried Google Docs yet, try that instead of showing error
+        if (!useGoogleDocs) {
+          setUseGoogleDocs(true);
+          setIsFrameLoaded(false); // Reset the loading state for the new iframe
+        } else {
+          setHasFrameError(true);
+        }
       }
     }, 5000);
 
     return () => clearTimeout(timer);
-  }, [isFrameLoaded]);
+  }, [isFrameLoaded, useGoogleDocs]);
 
   // Function to reload the iframe when there's an error
   const reloadIframe = () => {
     setHasFrameError(false);
     setIsFrameLoaded(false);
     
-    if (iframeRef.current) {
-      // Force reload by changing the src
-      const timestamp = new Date().getTime();
-      iframeRef.current.src = `${googleDocsEmbedUrl}?t=${timestamp}`;
+    // Try the other embedding method if the current one fails
+    setUseGoogleDocs(!useGoogleDocs);
+  };
+
+  // Determine the source URL based on current state
+  const getSourceUrl = () => {
+    if (useGoogleDocs) {
+      return `${googleDocsEmbedUrl}?t=${new Date().getTime()}`;
+    } else {
+      return `${resumePdfPath}#view=FitH&t=${new Date().getTime()}`;
     }
   };
 
@@ -59,7 +72,7 @@ const Resume = () => {
               <div className="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-10">
                 <div className="text-center">
                   <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white mx-auto mb-4"></div>
-                  <p className="text-white text-lg">Loading Resume...</p>
+                  <p className="text-white text-lg">Loading Resume{useGoogleDocs ? " from Google Docs" : ""}...</p>
                 </div>
               </div>
             )}
@@ -74,15 +87,15 @@ const Resume = () => {
                       onClick={reloadIframe}
                       className="bg-indigo-600 text-white px-6 py-3 rounded-lg inline-block hover:bg-indigo-700 transition-all"
                     >
-                      Try Again
+                      Try {useGoogleDocs ? "PDF Viewer" : "Google Docs"} Instead
                     </button>
                     <a 
-                      href={resumeGoogleDocsLink}
+                      href={useGoogleDocs ? resumePdfPath : resumeGoogleDocsLink}
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="bg-blue-600 text-white px-6 py-3 rounded-lg inline-block hover:bg-blue-700 transition-all"
                     >
-                      View in Google Docs
+                      Open in {useGoogleDocs ? "PDF Viewer" : "Google Docs"}
                     </a>
                   </div>
                 </div>
@@ -90,7 +103,7 @@ const Resume = () => {
             ) : (
               <iframe
                 ref={iframeRef}
-                src={googleDocsEmbedUrl}
+                src={getSourceUrl()}
                 title="Nikhilesh Suravarjjala Resume"
                 className="w-full h-full"
                 onLoad={() => setIsFrameLoaded(true)}
